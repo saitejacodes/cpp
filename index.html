@@ -1,204 +1,520 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>C++ Practice Tracker — Neso Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); }
-.container { padding: 1rem 0; }
-.header { margin-bottom: 1.5rem; }
-.header h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
-.header p { font-size: 14px; color: var(--color-text-secondary); }
-.progress-bar-wrap { background: var(--color-background-secondary); border-radius: 99px; height: 8px; margin: 12px 0 4px; }
-.progress-bar-fill { height: 8px; border-radius: 99px; background: #1D9E75; transition: width 0.3s; }
-.progress-label { font-size: 12px; color: var(--color-text-secondary); }
-.section { margin-bottom: 1rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
-.section-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; cursor: pointer; background: var(--color-background-secondary); user-select: none; }
-.section-header:hover { background: var(--color-background-tertiary); }
-.section-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
-.section-badge { font-size: 11px; color: var(--color-text-secondary); background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 99px; padding: 2px 8px; }
-.chevron { font-size: 14px; color: var(--color-text-secondary); transition: transform 0.2s; }
-.chevron.open { transform: rotate(180deg); }
-.lectures { display: none; }
-.lectures.open { display: block; }
-.lecture-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 0.5px solid var(--color-border-tertiary); cursor: pointer; transition: background 0.15s; }
-.lecture-row:hover { background: var(--color-background-secondary); }
-.lecture-row.done { opacity: 0.6; }
-.lec-num { font-size: 11px; color: var(--color-text-secondary); min-width: 24px; }
-.lec-title { font-size: 13px; color: var(--color-text-primary); flex: 1; }
-.lec-check { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--color-border-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
-.lec-check.checked { background: #1D9E75; border-color: #1D9E75; }
-.lec-check.checked::after { content: '✓'; font-size: 10px; color: white; }
-.practice-btn { font-size: 11px; padding: 4px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; white-space: nowrap; }
-.practice-btn:hover { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
-</style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --bg4: #222230;
+    --accent: #00ff88;
+    --accent2: #00cc6a;
+    --accent3: #7c3aed;
+    --text: #f0f0f8;
+    --text2: #9090b0;
+    --text3: #5a5a7a;
+    --border: #2a2a3a;
+    --border2: #3a3a4a;
+    --red: #ff4466;
+    --amber: #ffaa00;
+    --blue: #4488ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-<div class="container">
-  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Neso Academy C++ practice tracker with 50 lectures</h2>
-  <div class="header">
-    <h2>Neso Academy — C++ practice tracker</h2>
-    <p>Check off lectures as you watch. Click "get practice" for beginner exercises.</p>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
-    <div class="progress-label" id="prog-label">0 of 50 lectures done</div>
-  </div>
-  <div id="sections"></div>
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 20%, rgba(124,58,237,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0,255,136,0.05) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrapper { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; position: relative; z-index: 1; }
+
+  /* Header */
+  header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #000; flex-shrink: 0; }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+  h1 span { color: var(--accent); }
+  .subtitle { font-size: 13px; color: var(--text2); margin-top: 4px; font-weight: 400; }
+  .stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 1.5rem; }
+  .stat { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; }
+  .stat-num { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--accent); }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  /* Progress */
+  .progress-wrap { margin-top: 1.5rem; }
+  .progress-meta { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: var(--text2); }
+  .progress-track { height: 6px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent3)); border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+
+  /* Section cards */
+  .section { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; }
+  .section:hover { border-color: var(--border2); }
+  .section.active { border-color: var(--accent3); }
+
+  .sec-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .sec-header:hover { background: var(--bg3); }
+
+  .sec-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .sec-title { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
+  .sec-badge { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text3); background: var(--bg4); border: 1px solid var(--border); border-radius: 99px; padding: 2px 9px; }
+  .sec-badge.done { color: var(--accent); border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.05); }
+  .sec-chevron { font-size: 12px; color: var(--text3); transition: transform 0.25s; }
+  .section.open .sec-chevron { transform: rotate(180deg); }
+
+  /* Lectures */
+  .sec-body { display: none; border-top: 1px solid var(--border); }
+  .section.open .sec-body { display: block; }
+
+  .lec-row { display: flex; align-items: center; gap: 10px; padding: 11px 18px; border-bottom: 1px solid var(--border); transition: background 0.12s; }
+  .lec-row:last-child { border-bottom: none; }
+  .lec-row:hover { background: var(--bg3); }
+  .lec-row.completed { opacity: 0.5; }
+  .lec-row.completed .lec-name { text-decoration: line-through; }
+
+  .lec-num { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text3); min-width: 28px; }
+  .lec-name { font-size: 13px; color: var(--text); flex: 1; font-weight: 400; line-height: 1.4; }
+
+  .btn-practice { font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 600; padding: 5px 11px; border-radius: 6px; background: transparent; border: 1px solid var(--border2); color: var(--text2); cursor: pointer; white-space: nowrap; transition: all 0.15s; letter-spacing: 0.3px; }
+  .btn-practice:hover { background: rgba(124,58,237,0.15); border-color: var(--accent3); color: var(--accent); }
+
+  .lec-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border2); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 10px; }
+  .lec-check:hover { border-color: var(--accent); }
+  .lec-check.on { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 18px; max-width: 680px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes popIn { from { transform: scale(0.92) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+  .modal-head { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .modal-topic { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 600; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+  .modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+  .modal-close { background: var(--bg4); border: 1px solid var(--border); color: var(--text2); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .modal-close:hover { background: var(--red); color: white; border-color: var(--red); }
+
+  .modal-body { overflow-y: auto; padding: 20px; flex: 1; }
+  .modal-body::-webkit-scrollbar { width: 4px; }
+  .modal-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .q-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; transition: border-color 0.2s; }
+  .q-item:hover { border-color: var(--border2); }
+  .q-num { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--accent3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .q-text { font-size: 13px; color: var(--text); line-height: 1.6; font-weight: 500; }
+  .q-hint { font-size: 12px; color: var(--text2); margin-top: 6px; line-height: 1.5; padding-top: 6px; border-top: 1px dashed var(--border); }
+  .q-hint b { color: var(--amber); font-weight: 600; }
+
+  .modal-foot { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-done { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; padding: 9px 20px; border-radius: 9px; border: none; cursor: pointer; background: var(--accent); color: #000; transition: all 0.15s; }
+  .btn-done:hover { background: #00ffaa; transform: translateY(-1px); }
+  .btn-cancel { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; padding: 9px 20px; border-radius: 9px; border: 1px solid var(--border2); cursor: pointer; background: transparent; color: var(--text2); transition: all 0.15s; }
+  .btn-cancel:hover { background: var(--bg4); }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg3); border: 1px solid var(--accent); color: var(--accent); padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; z-index: 200; transform: translateY(60px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 20px; }
+    .sec-header { padding: 12px 14px; }
+    .lec-row { padding: 10px 14px; gap: 8px; }
+    .btn-practice { display: none; }
+    .modal { max-height: 92vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <header>
+    <div class="header-top">
+      <div>
+        <div class="logo">
+          <div class="logo-icon">C++</div>
+          <h1>Neso <span>C++</span> Tracker</h1>
+        </div>
+        <p class="subtitle">Track your progress · Practice after every lecture · Zero exp? No problem.</p>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Completed</div></div>
+      <div class="stat"><div class="stat-num" id="stat-left">50</div><div class="stat-label">Remaining</div></div>
+      <div class="stat"><div class="stat-num" id="stat-pct">0%</div><div class="stat-label">Progress</div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>Overall progress</span><span id="prog-text">0 / 50 lectures</span></div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+  </header>
+
+  <div id="sections-container"></div>
 </div>
 
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-topic" id="modal-topic"></div>
+        <div class="modal-title" id="modal-title"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal()">Close</button>
+      <button class="btn-done" onclick="markFromModal()">✓ Mark as done</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const curriculum = [
-  { title: "Introduction", icon: "ti-rocket", lectures: [
-    "Introduction to C++ programming",
-    "Writing a simple C++ program",
-    "Installing source code editor and compiler",
-    "Compiling & executing C++ programs (Windows CMD)",
-    "Compiling & executing C++ programs (VS Code)",
-  ]},
-  { title: "Input, Output & Basics", icon: "ti-terminal", lectures: [
-    "Input and output in C++",
-    "Namespaces in C++",
-    "Comments in C++",
-    "Comments in C++ (exercise)",
-  ]},
-  { title: "Control Flow", icon: "ti-arrows-split-2", lectures: [
-    "The 'while' statement in C++",
-    "The 'for' statement in C++",
-    "Reading an unknown number of inputs in C++",
-    "The 'if-else' statement in C++",
-    "The 'else-if' statement in C++",
-    "C++ program to count consecutive inputs",
-  ]},
-  { title: "Variables & Types", icon: "ti-variable", lectures: [
-    "Primitive built-in types in C++",
-    "Variables in C++",
-    "Compound types — references & pointers",
-    "The const qualifier in C++",
-    "Dealing with types in C++",
-  ]},
-  { title: "Operators", icon: "ti-math-symbols", lectures: [
-    "Arithmetic operators in C++",
-    "Logical operators in C++",
-    "Relational operators in C++",
-    "Assignment operators in C++",
-    "Increment & decrement operators",
-  ]},
-  { title: "Strings, Vectors & Arrays", icon: "ti-list", lectures: [
-    "Library string type in C++",
-    "Library vector type in C++",
-    "Introducing iterators in C++",
-    "Arrays in C++",
-    "Pointers and arrays in C++",
-  ]},
-  { title: "Functions", icon: "ti-function", lectures: [
-    "Introduction to functions in C++",
-    "Function argument passing in C++",
-    "Return types and the return statement",
-    "Overloaded functions in C++",
-    "Default arguments in C++",
-  ]},
-  { title: "Classes & OOP", icon: "ti-box", lectures: [
-    "Introduction to classes in C++",
-    "Defining member functions",
-    "Constructors in C++",
-    "Access control and encapsulation",
-    "Class scope and members",
-    "The 'this' pointer in C++",
-  ]},
-  { title: "Operator Overloading", icon: "ti-replace", lectures: [
-    "Introduction to operator overloading",
-    "Overloading arithmetic operators",
-    "Overloading relational operators",
-    "Overloading input/output operators",
-    "Overloading increment/decrement operators",
-  ]},
-  { title: "Inheritance & Polymorphism", icon: "ti-hierarchy", lectures: [
-    "Introduction to inheritance in C++",
-    "Virtual functions and polymorphism",
-    "Abstract base classes in C++",
-    "Access control in inheritance",
-    "Constructors and copy control with inheritance",
-  ]},
+const COLORS = ['#7c3aed','#0ea5e9','#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899'];
+
+const data = [
+  {
+    title: "Introduction", color: COLORS[0], icon: "🚀",
+    lectures: [
+      "Introduction to C++ programming",
+      "Writing a simple C++ program",
+      "Installing source code editor and compiler",
+      "Compiling & executing C++ programs (Windows CMD)",
+      "Compiling & executing C++ programs (VS Code)"
+    ],
+    questions: [
+      { q: "What does #include <iostream> do and why do we need it at the top of every C++ program?", hint: "<b>Hint:</b> Think of it as importing a toolbox that gives you cin and cout." },
+      { q: "What is the purpose of int main() { } and why does every C++ program need exactly one main function?", hint: "<b>Hint:</b> The program starts executing from here — it's the entry door." },
+      { q: "What does return 0; mean at the end of main, and what happens if you forget to write it?", hint: "<b>Hint:</b> It tells the operating system whether your program ran successfully." },
+      { q: "What is the difference between cout and cin? Write a simple program that asks for your name and prints 'Hello, [name]!'", hint: "<b>Hint:</b> cout outputs, cin inputs. Use << for cout and >> for cin." },
+      { q: "What is a compiler and what does it do to your .cpp file? What file does it produce?", hint: "<b>Hint:</b> It translates human-readable C++ into machine code the computer can run." },
+      { q: "What is a syntax error? Write a small broken program and identify at least 2 syntax mistakes.", hint: "<b>Hint:</b> Missing semicolons, wrong brackets, typos in keywords are common causes." },
+      { q: "Write your very first C++ program that prints your name, your city, and your favourite number on three separate lines.", hint: "<b>Hint:</b> Use cout << ... << endl; three times inside main." },
+      { q: "What is the difference between .cpp and .exe files? Why can't you just share a .cpp file and run it on another computer?", hint: "<b>Hint:</b> One is source code, the other is a compiled executable for a specific OS." }
+    ]
+  },
+  {
+    title: "Input, Output & Basics", color: COLORS[1], icon: "💻",
+    lectures: [
+      "Input and output in C++",
+      "Namespaces in C++",
+      "Comments in C++",
+      "Comments in C++ (exercise)"
+    ],
+    questions: [
+      { q: "What is 'std::' and why do we write 'using namespace std;' — what problem does it solve?", hint: "<b>Hint:</b> Without it you'd have to write std::cout, std::cin every single time." },
+      { q: "What is the difference between endl and '\\n'? When would you prefer one over the other?", hint: "<b>Hint:</b> endl flushes the buffer; \\n is faster but doesn't flush." },
+      { q: "Write a program that reads TWO integers from the user and prints their sum, difference, and product.", hint: "<b>Hint:</b> Declare two int variables, use cin >> a >> b; to read both at once." },
+      { q: "What are single-line comments (//) and multi-line comments (/* */)? Write a well-commented Hello World program.", hint: "<b>Hint:</b> Comments are ignored by the compiler — they're notes for humans." },
+      { q: "Write a program that reads your age and prints: 'You are X years old and will turn Y next year.'", hint: "<b>Hint:</b> Y = age + 1. String concatenation happens naturally with multiple << operators." },
+      { q: "What is a namespace? Why did C++ introduce namespaces — what problem were they solving?", hint: "<b>Hint:</b> Imagine two libraries both having a function called 'print' — namespaces avoid that clash." },
+      { q: "What happens if you type cin >> x but the user enters a letter when x is an int? What kind of problem does this cause?", hint: "<b>Hint:</b> cin fails silently and x gets garbage — input validation matters." },
+      { q: "Write a program that outputs a simple formatted receipt: item name, price, quantity on separate lines, then the total at the bottom.", hint: "<b>Hint:</b> Use \\t for tab alignment. total = price * quantity." }
+    ]
+  },
+  {
+    title: "Control Flow", color: COLORS[2], icon: "🔀",
+    lectures: [
+      "The 'while' statement in C++",
+      "The 'for' statement in C++",
+      "Reading an unknown number of inputs in C++",
+      "The 'if-else' statement in C++",
+      "The 'else-if' statement in C++",
+      "C++ program to count consecutive inputs"
+    ],
+    questions: [
+      { q: "Write a program using a for loop that prints all numbers from 1 to 20. Then modify it to print only even numbers.", hint: "<b>Hint:</b> For even numbers, check if i % 2 == 0, or simply use i += 2 in the loop." },
+      { q: "Write a while loop that keeps asking the user to enter a number until they enter 0, then prints how many numbers they entered.", hint: "<b>Hint:</b> Use a counter variable. The loop condition is: while (input != 0)." },
+      { q: "Write a program that asks a user's marks (0-100) and prints: Distinction (≥85), Merit (≥70), Pass (≥50), or Fail (<50).", hint: "<b>Hint:</b> Use if-else if-else ladder. Check from highest to lowest condition." },
+      { q: "What is an infinite loop? Write one intentionally using while(true), then explain how you would safely exit it.", hint: "<b>Hint:</b> Use break; to exit. A real use case: menus that keep showing until the user quits." },
+      { q: "Write a program using nested loops that prints this pattern: row 1 has 1 star, row 2 has 2 stars, up to row 5.", hint: "<b>Hint:</b> Outer loop = rows, inner loop = stars. Use cout << '*' in the inner loop." },
+      { q: "What is the difference between a while loop and a do-while loop? Write the same program using both and show the difference.", hint: "<b>Hint:</b> do-while always runs at least once even if the condition is false from the start." },
+      { q: "Write a program that reads numbers from the user until EOF (Ctrl+D/Ctrl+Z) and prints the sum and count of all numbers entered.", hint: "<b>Hint:</b> Use: while(cin >> x) { ... } — this loops until input fails." },
+      { q: "Write a simple number guessing game: computer picks 7, user guesses until correct. Print 'Too high', 'Too low', or 'Correct!'", hint: "<b>Hint:</b> Use a while loop + if-else. Later you can use rand() to pick random numbers." }
+    ]
+  },
+  {
+    title: "Variables & Types", color: COLORS[3], icon: "📦",
+    lectures: [
+      "Primitive built-in types in C++",
+      "Variables in C++",
+      "Compound types — references & pointers",
+      "The const qualifier in C++",
+      "Dealing with types in C++"
+    ],
+    questions: [
+      { q: "What are the 6 primitive data types in C++ (int, float, double, char, bool, void)? Write a program declaring one of each and printing them.", hint: "<b>Hint:</b> sizeof(int)=4, sizeof(double)=8 on most systems. Print sizes with sizeof()." },
+      { q: "What is the difference between int and long long? When would you use long long instead of int?", hint: "<b>Hint:</b> int holds up to ~2 billion. long long holds up to ~9.2 quintillion. Use for big numbers." },
+      { q: "What is a reference variable in C++? Write a program showing that changing a reference also changes the original variable.", hint: "<b>Hint:</b> int& ref = x; — ref is an alias for x. They share the same memory address." },
+      { q: "What does const mean? Write a program with a const PI = 3.14159 and show what error you get when you try to change it.", hint: "<b>Hint:</b> const values are read-only. The compiler will reject any assignment to them." },
+      { q: "What is type casting? Write a program that divides 7 by 2 and shows the difference between int division and float division.", hint: "<b>Hint:</b> 7/2 = 3 (int), but (float)7/2 = 3.5. Cast one operand to float." },
+      { q: "What is the difference between float and double? Write a program showing precision differences when storing 3.14159265358979.", hint: "<b>Hint:</b> float has ~7 decimal digits precision, double has ~15. See where they start to differ." },
+      { q: "What is overflow? Write a program that stores INT_MAX in an int and adds 1 — what unexpected result do you get and why?", hint: "<b>Hint:</b> INT_MAX is 2147483647. Adding 1 wraps around to -2147483648 (overflow)." },
+      { q: "What is the 'auto' keyword in C++? Write a program using auto for 3 different variable types and explain how C++ figures out the type.", hint: "<b>Hint:</b> auto x = 5 makes x an int. auto y = 3.14 makes y a double. Compiler infers the type." }
+    ]
+  },
+  {
+    title: "Operators", color: COLORS[4], icon: "⚙️",
+    lectures: [
+      "Arithmetic operators in C++",
+      "Logical operators in C++",
+      "Relational operators in C++",
+      "Assignment operators in C++",
+      "Increment & decrement operators"
+    ],
+    questions: [
+      { q: "What does the modulus operator (%) do? Write a program that uses % to check if a number is even or odd.", hint: "<b>Hint:</b> If n % 2 == 0, it's even. If n % 2 == 1, it's odd." },
+      { q: "What is the difference between i++ and ++i? Write a program that clearly demonstrates the different behaviour of each.", hint: "<b>Hint:</b> i++ returns current value then increments. ++i increments first then returns new value." },
+      { q: "What do &&, ||, and ! do? Write a program that checks if a number is between 1 and 100 (inclusive) using && and prints the result.", hint: "<b>Hint:</b> if (n >= 1 && n <= 100). The && means both conditions must be true." },
+      { q: "What is the difference between = (assignment) and == (equality)? Write a program showing the common beginner bug of using = inside an if condition.", hint: "<b>Hint:</b> if (x = 5) always succeeds because it assigns 5. if (x == 5) checks equality." },
+      { q: "What do +=, -=, *=, /= mean? Rewrite 'x = x + 10' using shorthand operators for all four arithmetic operations.", hint: "<b>Hint:</b> x += 10 is identical to x = x + 10. These are compound assignment operators." },
+      { q: "What is operator precedence? Write the expression 2 + 3 * 4 - 1 and show step by step how C++ evaluates it.", hint: "<b>Hint:</b> Multiplication happens before addition. Result is 2 + 12 - 1 = 13, not 19." },
+      { q: "Write a program that reads a year and checks if it's a leap year using logical operators. (Divisible by 4, but not 100, unless also divisible by 400)", hint: "<b>Hint:</b> (year%4==0 && year%100!=0) || (year%400==0). Test with 2000, 1900, 2024." },
+      { q: "What is short-circuit evaluation in C++? Show with code why false && someFunction() never calls someFunction.", hint: "<b>Hint:</b> If first part of && is false, C++ skips the second part entirely — no need to check." }
+    ]
+  },
+  {
+    title: "Strings, Vectors & Arrays", color: COLORS[5], icon: "📋",
+    lectures: [
+      "Library string type in C++",
+      "Library vector type in C++",
+      "Introducing iterators in C++",
+      "Arrays in C++",
+      "Pointers and arrays in C++"
+    ],
+    questions: [
+      { q: "What is the difference between a C-style char array and a std::string? Write a program using std::string to store and print your full name.", hint: "<b>Hint:</b> std::string is safer, resizable, and has helpful methods like .length(), .substr()." },
+      { q: "Write a program that reads a sentence from the user (with spaces using getline) and prints the number of characters in it.", hint: "<b>Hint:</b> Use getline(cin, str) for strings with spaces. Use str.length() or str.size()." },
+      { q: "What is a vector? How is it different from an array? Write a program that stores 5 numbers in a vector and prints them all.", hint: "<b>Hint:</b> vector<int> v; v.push_back(10); A vector can grow dynamically unlike a fixed array." },
+      { q: "Write a program that creates an array of 5 test scores, calculates the average, and prints the highest and lowest score.", hint: "<b>Hint:</b> Loop through the array. Keep track of max and min with if comparisons." },
+      { q: "What happens if you access array[10] when the array only has 5 elements? What is this bug called?", hint: "<b>Hint:</b> It's called 'out of bounds access' — undefined behavior. Can crash or corrupt data." },
+      { q: "Write a program that reverses a vector of integers without using any built-in reverse function (do it manually with a loop).", hint: "<b>Hint:</b> Swap elements: v[0] with v[n-1], v[1] with v[n-2], loop till middle." },
+      { q: "What is an iterator? Write a program using iterators (begin() and end()) to print all elements of a vector.", hint: "<b>Hint:</b> for(auto it = v.begin(); it != v.end(); it++) { cout << *it; } — the * dereferences." },
+      { q: "Write a program that takes a string and counts how many vowels (a,e,i,o,u) are in it using a for loop.", hint: "<b>Hint:</b> Loop through each character. Use if(c=='a' || c=='e' || ...) to check vowels." }
+    ]
+  },
+  {
+    title: "Functions", color: COLORS[6], icon: "🔧",
+    lectures: [
+      "Introduction to functions in C++",
+      "Function argument passing in C++",
+      "Return types and the return statement",
+      "Overloaded functions in C++",
+      "Default arguments in C++"
+    ],
+    questions: [
+      { q: "Write a function called 'greet' that takes a name as a string and prints 'Hello, [name]! Welcome to C++.' Call it from main.", hint: "<b>Hint:</b> void greet(string name) { cout << ... } — void means it returns nothing." },
+      { q: "What is the difference between pass by value and pass by reference? Write a function 'double' that doubles a number, once each way.", hint: "<b>Hint:</b> Pass by value: original unchanged. Pass by reference (int& n): original IS changed." },
+      { q: "Write a function that takes two integers and returns the larger one. Then write a second version for two doubles. Demonstrate both.", hint: "<b>Hint:</b> int maxOf(int a, int b) { return (a > b) ? a : b; } Return type must match what you return." },
+      { q: "What is function overloading? Write an 'area' function that is overloaded for a circle (radius) and a rectangle (width, height).", hint: "<b>Hint:</b> Same name, different parameters. C++ picks the right one based on argument types." },
+      { q: "What are default arguments? Write a 'power' function where the exponent defaults to 2 if not provided.", hint: "<b>Hint:</b> int power(int base, int exp = 2). Calling power(5) returns 25, power(5,3) returns 125." },
+      { q: "What is recursion? Write a recursive function to calculate factorial of a number (n! = n * (n-1) * ... * 1).", hint: "<b>Hint:</b> Base case: if(n==0) return 1. Recursive: return n * factorial(n-1)." },
+      { q: "What is the call stack? Draw (or describe) what happens to the stack when factorial(4) calls factorial(3) calls factorial(2)...", hint: "<b>Hint:</b> Each call adds a new frame on the stack. They unwind when base case is reached." },
+      { q: "Write a function 'isPrime' that returns true if a number is prime, false otherwise. Use it to print all primes from 1 to 50.", hint: "<b>Hint:</b> Check divisibility from 2 to sqrt(n). If nothing divides evenly, it's prime." }
+    ]
+  },
+  {
+    title: "Classes & OOP", color: COLORS[7], icon: "🏗️",
+    lectures: [
+      "Introduction to classes in C++",
+      "Defining member functions",
+      "Constructors in C++",
+      "Access control and encapsulation",
+      "Class scope and members",
+      "The 'this' pointer in C++"
+    ],
+    questions: [
+      { q: "What is a class? Create a 'Student' class with name and age as attributes. Create an object of it and print the details.", hint: "<b>Hint:</b> class Student { public: string name; int age; }; Student s; s.name = 'Sai';." },
+      { q: "What is the difference between public and private members? Rewrite your Student class with private attributes and public getter functions.", hint: "<b>Hint:</b> Private = only accessible inside the class. Public = accessible from anywhere." },
+      { q: "What is a constructor and why is it useful? Add a constructor to your Student class that sets name and age when the object is created.", hint: "<b>Hint:</b> Student(string n, int a) { name = n; age = a; } Called automatically at object creation." },
+      { q: "What is encapsulation? Write a 'BankAccount' class with private balance, and public deposit/withdraw/getBalance methods.", hint: "<b>Hint:</b> Hide the data, expose operations. The balance can only change through deposit/withdraw." },
+      { q: "What is the 'this' pointer? Write a constructor where the parameter names are the same as member names and use 'this->' to distinguish.", hint: "<b>Hint:</b> this->name = name; — 'this' points to the current object being constructed." },
+      { q: "What is a default constructor? What happens if you don't write any constructor at all in your class?", hint: "<b>Hint:</b> C++ auto-generates a default constructor if you don't write one. It does nothing special." },
+      { q: "Write a 'Rectangle' class with width and height, a constructor, and methods: area(), perimeter(), and isSquare().", hint: "<b>Hint:</b> isSquare() returns true if width == height. Good practice for combining data + behavior." },
+      { q: "What is the difference between a struct and a class in C++? Write the same simple program using both and note the one key difference.", hint: "<b>Hint:</b> In struct, members are public by default. In class, they're private by default." }
+    ]
+  },
+  {
+    title: "Operator Overloading", color: COLORS[8], icon: "🔄",
+    lectures: [
+      "Introduction to operator overloading",
+      "Overloading arithmetic operators",
+      "Overloading relational operators",
+      "Overloading input/output operators",
+      "Overloading increment/decrement operators"
+    ],
+    questions: [
+      { q: "What is operator overloading and why is it useful? Give a real-world example where overloading + makes code more readable.", hint: "<b>Hint:</b> A Vector2D class: v1 + v2 is cleaner than v1.add(v2). It's about natural syntax." },
+      { q: "Write a 'Fraction' class (numerator, denominator) and overload the + operator to add two fractions correctly.", hint: "<b>Hint:</b> a/b + c/d = (a*d + b*c)/(b*d). Fraction operator+(Fraction other) { ... }" },
+      { q: "Overload the == and != operators for your Fraction class. Test with fractions 1/2 and 2/4 (they should be equal after simplification).", hint: "<b>Hint:</b> Cross multiply to compare: a/b == c/d when a*d == b*c." },
+      { q: "Overload << for your Fraction class so that cout << myFraction prints it as '3/4' instead of garbage.", hint: "<b>Hint:</b> friend ostream& operator<<(ostream& os, Fraction f) { os << f.num << '/' << f.den; return os; }" },
+      { q: "What is the difference between prefix ++ (++x) and postfix ++ (x++) when overloading? How does C++ tell them apart?", hint: "<b>Hint:</b> Postfix version takes a dummy int parameter: operator++(int). Prefix takes none." },
+      { q: "Overload the * operator for a 'Vector2D' class (x, y) so that v * 3 scales the vector by 3.", hint: "<b>Hint:</b> Vector2D operator*(int scalar) { return Vector2D(x*scalar, y*scalar); }" },
+      { q: "Can you overload every operator in C++? List 3 operators that CANNOT be overloaded and explain why.", hint: "<b>Hint:</b> :: (scope), . (member access), ?: (ternary), sizeof cannot be overloaded." },
+      { q: "Write a 'Matrix2x2' class and overload + to add two 2x2 matrices element by element. Test it with two sample matrices.", hint: "<b>Hint:</b> Store as int data[2][2]. Add corresponding elements: result[i][j] = a[i][j] + b[i][j]." }
+    ]
+  },
+  {
+    title: "Inheritance & Polymorphism", color: COLORS[9], icon: "🌳",
+    lectures: [
+      "Introduction to inheritance in C++",
+      "Virtual functions and polymorphism",
+      "Abstract base classes in C++",
+      "Access control in inheritance",
+      "Constructors and copy control with inheritance"
+    ],
+    questions: [
+      { q: "What is inheritance? Create a 'Vehicle' base class and a 'Car' subclass that inherits from it. Add a method in each.", hint: "<b>Hint:</b> class Car : public Vehicle { ... }. Car gets all of Vehicle's public members automatically." },
+      { q: "What is the difference between public, protected, and private inheritance? Which one do you use 99% of the time and why?", hint: "<b>Hint:</b> public inheritance (is-a relationship) is the most common. protected/private are rare." },
+      { q: "What is a virtual function? Create a 'Shape' base class with virtual area(), and override it in Circle and Rectangle subclasses.", hint: "<b>Hint:</b> virtual double area() = 0; in base. Each child implements its own. Called via pointer." },
+      { q: "What is polymorphism? Write code using a Shape* pointer that calls area() on both a Circle and Rectangle object.", hint: "<b>Hint:</b> Shape* s = new Circle(5); s->area(); — the right version is called at runtime." },
+      { q: "What is an abstract class? Why can't you create an object of an abstract class directly?", hint: "<b>Hint:</b> A class with at least one pure virtual function (= 0) is abstract. It's a blueprint only." },
+      { q: "What is a virtual destructor and why is it important? Show the memory leak bug that happens without it.", hint: "<b>Hint:</b> Without virtual ~Base(), deleting a derived object through a base pointer won't call the right destructor." },
+      { q: "What is method overriding vs method overloading? Write a clear example showing the difference between the two.", hint: "<b>Hint:</b> Overloading = same name, different params, same class. Overriding = same name, different class (parent/child)." },
+      { q: "Write a complete mini-program: Animal base class with speak(), Dog and Cat subclasses overriding speak(). Store them in a vector<Animal*> and call speak() on each.", hint: "<b>Hint:</b> This is runtime polymorphism in action. The vector holds base pointers but calls correct child methods." }
+    ]
+  }
 ];
 
-const STORAGE_KEY = 'neso_cpp_progress';
-let done = {};
-try { const s = window.storage; } catch(e) {}
+let progress = {};
+let currentModal = null;
 
-function save() {
-  try { window.storage && window.storage.set(STORAGE_KEY, JSON.stringify(done)); } catch(e) {}
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
+function loadProgress() {
+  try { const s = localStorage.getItem('neso_cpp_v2'); if(s) progress = JSON.parse(s); } catch(e) {}
 }
-function load() {
-  try { const d = localStorage.getItem(STORAGE_KEY); if(d) done = JSON.parse(d); } catch(e) {}
+function saveProgress() {
+  try { localStorage.setItem('neso_cpp_v2', JSON.stringify(progress)); } catch(e) {}
 }
-load();
+function getLecId(si, li) { return `${si}_${li}`; }
+function countDone() { return Object.values(progress).filter(Boolean).length; }
+function totalLecs() { return data.reduce((a,s)=>a+s.lectures.length,0); }
 
-function getLecId(si, li) { return `${si}-${li}`; }
-
-function updateProgress() {
-  const total = curriculum.reduce((a,s)=>a+s.lectures.length,0);
-  const count = Object.values(done).filter(Boolean).length;
-  document.getElementById('prog-fill').style.width = (count/total*100)+'%';
-  document.getElementById('prog-label').textContent = `${count} of ${total} lectures done`;
+function updateStats() {
+  const done = countDone(), total = totalLecs();
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-left').textContent = total - done;
+  document.getElementById('stat-pct').textContent = Math.round(done/total*100) + '%';
+  document.getElementById('prog-fill').style.width = (done/total*100) + '%';
+  document.getElementById('prog-text').textContent = `${done} / ${total} lectures`;
 }
 
 function buildUI() {
-  const cont = document.getElementById('sections');
+  const cont = document.getElementById('sections-container');
   let globalIdx = 1;
-  curriculum.forEach((sec, si) => {
-    const secEl = document.createElement('div');
-    secEl.className = 'section';
-    const doneInSec = sec.lectures.filter((_,li)=>done[getLecId(si,li)]).length;
-    secEl.innerHTML = `
-      <div class="section-header" onclick="toggleSection(${si})">
-        <div class="section-title">
-          <i class="ti ${sec.icon}" aria-hidden="true" style="font-size:16px;color:var(--color-text-secondary)"></i>
-          ${sec.title}
-          <span class="section-badge" id="badge-${si}">${doneInSec}/${sec.lectures.length}</span>
-        </div>
-        <i class="ti ti-chevron-down chevron" id="chev-${si}" aria-hidden="true"></i>
+  data.forEach((sec, si) => {
+    const div = document.createElement('div');
+    div.className = 'section';
+    div.id = 'sec-' + si;
+
+    const doneSec = sec.lectures.filter((_,li)=>progress[getLecId(si,li)]).length;
+    const allDone = doneSec === sec.lectures.length;
+
+    div.innerHTML = `
+      <div class="sec-header" onclick="toggleSec(${si})">
+        <div class="sec-icon" style="background:${sec.color}22; font-size:15px">${sec.icon}</div>
+        <div class="sec-title">${sec.title}</div>
+        <div class="sec-badge ${allDone?'done':''}" id="secbadge-${si}">${doneSec}/${sec.lectures.length}</div>
+        <div class="sec-chevron" id="secchev-${si}">▼</div>
       </div>
-      <div class="lectures" id="lecs-${si}">
+      <div class="sec-body" id="secbody-${si}">
         ${sec.lectures.map((lec, li) => {
           const id = getLecId(si,li);
-          const checked = done[id] ? 'checked' : '';
-          const doneClass = done[id] ? 'done' : '';
-          return `<div class="lecture-row ${doneClass}" id="row-${si}-${li}">
-            <span class="lec-num">${globalIdx++ > 99 ? globalIdx-1 : (globalIdx-1 < 10 ? '0'+(globalIdx-1) : globalIdx-1)}</span>
-            <span class="lec-title">${lec}</span>
-            <button class="practice-btn" onclick="getPractice(event,'${lec.replace(/'/g,"\\'")}')">get practice ↗</button>
-            <div class="lec-check ${checked}" id="check-${si}-${li}" onclick="toggleDone(event,${si},${li})" title="Mark as done"></div>
+          const done = progress[id];
+          return `<div class="lec-row ${done?'completed':''}" id="row-${si}-${li}">
+            <span class="lec-num">${String(globalIdx++).padStart(2,'0')}</span>
+            <span class="lec-name">${lec}</span>
+            <button class="btn-practice" onclick="openModal(${si},${li})">practice ↗</button>
+            <div class="lec-check ${done?'on':''}" id="chk-${si}-${li}" onclick="toggleLec(${si},${li})" title="Mark done">
+              ${done?'✓':''}
+            </div>
           </div>`;
         }).join('')}
       </div>
     `;
-    cont.appendChild(secEl);
+    cont.appendChild(div);
   });
-  updateProgress();
+  updateStats();
 }
 
-function toggleSection(si) {
-  const lecs = document.getElementById('lecs-'+si);
-  const chev = document.getElementById('chev-'+si);
-  lecs.classList.toggle('open');
-  chev.classList.toggle('open');
+function toggleSec(si) {
+  const sec = document.getElementById('sec-'+si);
+  sec.classList.toggle('open');
 }
 
-function toggleDone(e, si, li) {
-  e.stopPropagation();
+function toggleLec(si, li) {
   const id = getLecId(si,li);
-  done[id] = !done[id];
-  save();
-  const check = document.getElementById(`check-${si}-${li}`);
+  progress[id] = !progress[id];
+  saveProgress();
+  const chk = document.getElementById(`chk-${si}-${li}`);
   const row = document.getElementById(`row-${si}-${li}`);
-  if(done[id]) { check.classList.add('checked'); row.classList.add('done'); }
-  else { check.classList.remove('checked'); row.classList.remove('done'); }
-  const sec = curriculum[si];
-  const doneInSec = sec.lectures.filter((_,li2)=>done[getLecId(si,li2)]).length;
-  document.getElementById(`badge-${si}`).textContent = `${doneInSec}/${sec.lectures.length}`;
-  updateProgress();
+  if(progress[id]) { chk.classList.add('on'); chk.textContent='✓'; row.classList.add('completed'); showToast('Lecture marked done! 🎉'); }
+  else { chk.classList.remove('on'); chk.textContent=''; row.classList.remove('completed'); }
+  const doneSec = data[si].lectures.filter((_,li2)=>progress[getLecId(si,li2)]).length;
+  const allDone = doneSec === data[si].lectures.length;
+  const badge = document.getElementById('secbadge-'+si);
+  badge.textContent = `${doneSec}/${data[si].lectures.length}`;
+  badge.className = 'sec-badge' + (allDone?' done':'');
+  updateStats();
 }
 
-function getPractice(e, lecTitle) {
-  e.stopPropagation();
-  sendPrompt(`I just watched the Neso Academy C++ lecture: "${lecTitle}". I have zero programming experience. Give me 3 beginner practice exercises for this topic with simple explanations. Keep it very easy and encouraging.`);
+function openModal(si, li) {
+  currentModal = {si, li};
+  const sec = data[si];
+  const lec = sec.lectures[li];
+  document.getElementById('modal-topic').textContent = sec.title;
+  document.getElementById('modal-title').textContent = lec;
+  const body = document.getElementById('modal-body');
+  body.innerHTML = sec.questions.map((q, i) => `
+    <div class="q-item">
+      <div class="q-num">Exercise ${i+1}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-hint">${q.hint}</div>
+    </div>
+  `).join('');
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  document.body.style.overflow = '';
+  currentModal = null;
+}
+
+function closeModalOutside(e) {
+  if(e.target === document.getElementById('modal')) closeModal();
+}
+
+function markFromModal() {
+  if(!currentModal) return;
+  const {si, li} = currentModal;
+  if(!progress[getLecId(si,li)]) toggleLec(si, li);
+  closeModal();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+loadProgress();
 buildUI();
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 </script>
+</body>
+</html>
