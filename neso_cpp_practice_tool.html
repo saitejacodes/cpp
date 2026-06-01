@@ -1,0 +1,204 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.container { padding: 1rem 0; }
+.header { margin-bottom: 1.5rem; }
+.header h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.header p { font-size: 14px; color: var(--color-text-secondary); }
+.progress-bar-wrap { background: var(--color-background-secondary); border-radius: 99px; height: 8px; margin: 12px 0 4px; }
+.progress-bar-fill { height: 8px; border-radius: 99px; background: #1D9E75; transition: width 0.3s; }
+.progress-label { font-size: 12px; color: var(--color-text-secondary); }
+.section { margin-bottom: 1rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+.section-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; cursor: pointer; background: var(--color-background-secondary); user-select: none; }
+.section-header:hover { background: var(--color-background-tertiary); }
+.section-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
+.section-badge { font-size: 11px; color: var(--color-text-secondary); background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 99px; padding: 2px 8px; }
+.chevron { font-size: 14px; color: var(--color-text-secondary); transition: transform 0.2s; }
+.chevron.open { transform: rotate(180deg); }
+.lectures { display: none; }
+.lectures.open { display: block; }
+.lecture-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 0.5px solid var(--color-border-tertiary); cursor: pointer; transition: background 0.15s; }
+.lecture-row:hover { background: var(--color-background-secondary); }
+.lecture-row.done { opacity: 0.6; }
+.lec-num { font-size: 11px; color: var(--color-text-secondary); min-width: 24px; }
+.lec-title { font-size: 13px; color: var(--color-text-primary); flex: 1; }
+.lec-check { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--color-border-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.lec-check.checked { background: #1D9E75; border-color: #1D9E75; }
+.lec-check.checked::after { content: '✓'; font-size: 10px; color: white; }
+.practice-btn { font-size: 11px; padding: 4px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; white-space: nowrap; }
+.practice-btn:hover { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+</style>
+
+<div class="container">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Neso Academy C++ practice tracker with 50 lectures</h2>
+  <div class="header">
+    <h2>Neso Academy — C++ practice tracker</h2>
+    <p>Check off lectures as you watch. Click "get practice" for beginner exercises.</p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="progress-label" id="prog-label">0 of 50 lectures done</div>
+  </div>
+  <div id="sections"></div>
+</div>
+
+<script>
+const curriculum = [
+  { title: "Introduction", icon: "ti-rocket", lectures: [
+    "Introduction to C++ programming",
+    "Writing a simple C++ program",
+    "Installing source code editor and compiler",
+    "Compiling & executing C++ programs (Windows CMD)",
+    "Compiling & executing C++ programs (VS Code)",
+  ]},
+  { title: "Input, Output & Basics", icon: "ti-terminal", lectures: [
+    "Input and output in C++",
+    "Namespaces in C++",
+    "Comments in C++",
+    "Comments in C++ (exercise)",
+  ]},
+  { title: "Control Flow", icon: "ti-arrows-split-2", lectures: [
+    "The 'while' statement in C++",
+    "The 'for' statement in C++",
+    "Reading an unknown number of inputs in C++",
+    "The 'if-else' statement in C++",
+    "The 'else-if' statement in C++",
+    "C++ program to count consecutive inputs",
+  ]},
+  { title: "Variables & Types", icon: "ti-variable", lectures: [
+    "Primitive built-in types in C++",
+    "Variables in C++",
+    "Compound types — references & pointers",
+    "The const qualifier in C++",
+    "Dealing with types in C++",
+  ]},
+  { title: "Operators", icon: "ti-math-symbols", lectures: [
+    "Arithmetic operators in C++",
+    "Logical operators in C++",
+    "Relational operators in C++",
+    "Assignment operators in C++",
+    "Increment & decrement operators",
+  ]},
+  { title: "Strings, Vectors & Arrays", icon: "ti-list", lectures: [
+    "Library string type in C++",
+    "Library vector type in C++",
+    "Introducing iterators in C++",
+    "Arrays in C++",
+    "Pointers and arrays in C++",
+  ]},
+  { title: "Functions", icon: "ti-function", lectures: [
+    "Introduction to functions in C++",
+    "Function argument passing in C++",
+    "Return types and the return statement",
+    "Overloaded functions in C++",
+    "Default arguments in C++",
+  ]},
+  { title: "Classes & OOP", icon: "ti-box", lectures: [
+    "Introduction to classes in C++",
+    "Defining member functions",
+    "Constructors in C++",
+    "Access control and encapsulation",
+    "Class scope and members",
+    "The 'this' pointer in C++",
+  ]},
+  { title: "Operator Overloading", icon: "ti-replace", lectures: [
+    "Introduction to operator overloading",
+    "Overloading arithmetic operators",
+    "Overloading relational operators",
+    "Overloading input/output operators",
+    "Overloading increment/decrement operators",
+  ]},
+  { title: "Inheritance & Polymorphism", icon: "ti-hierarchy", lectures: [
+    "Introduction to inheritance in C++",
+    "Virtual functions and polymorphism",
+    "Abstract base classes in C++",
+    "Access control in inheritance",
+    "Constructors and copy control with inheritance",
+  ]},
+];
+
+const STORAGE_KEY = 'neso_cpp_progress';
+let done = {};
+try { const s = window.storage; } catch(e) {}
+
+function save() {
+  try { window.storage && window.storage.set(STORAGE_KEY, JSON.stringify(done)); } catch(e) {}
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
+}
+function load() {
+  try { const d = localStorage.getItem(STORAGE_KEY); if(d) done = JSON.parse(d); } catch(e) {}
+}
+load();
+
+function getLecId(si, li) { return `${si}-${li}`; }
+
+function updateProgress() {
+  const total = curriculum.reduce((a,s)=>a+s.lectures.length,0);
+  const count = Object.values(done).filter(Boolean).length;
+  document.getElementById('prog-fill').style.width = (count/total*100)+'%';
+  document.getElementById('prog-label').textContent = `${count} of ${total} lectures done`;
+}
+
+function buildUI() {
+  const cont = document.getElementById('sections');
+  let globalIdx = 1;
+  curriculum.forEach((sec, si) => {
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+    const doneInSec = sec.lectures.filter((_,li)=>done[getLecId(si,li)]).length;
+    secEl.innerHTML = `
+      <div class="section-header" onclick="toggleSection(${si})">
+        <div class="section-title">
+          <i class="ti ${sec.icon}" aria-hidden="true" style="font-size:16px;color:var(--color-text-secondary)"></i>
+          ${sec.title}
+          <span class="section-badge" id="badge-${si}">${doneInSec}/${sec.lectures.length}</span>
+        </div>
+        <i class="ti ti-chevron-down chevron" id="chev-${si}" aria-hidden="true"></i>
+      </div>
+      <div class="lectures" id="lecs-${si}">
+        ${sec.lectures.map((lec, li) => {
+          const id = getLecId(si,li);
+          const checked = done[id] ? 'checked' : '';
+          const doneClass = done[id] ? 'done' : '';
+          return `<div class="lecture-row ${doneClass}" id="row-${si}-${li}">
+            <span class="lec-num">${globalIdx++ > 99 ? globalIdx-1 : (globalIdx-1 < 10 ? '0'+(globalIdx-1) : globalIdx-1)}</span>
+            <span class="lec-title">${lec}</span>
+            <button class="practice-btn" onclick="getPractice(event,'${lec.replace(/'/g,"\\'")}')">get practice ↗</button>
+            <div class="lec-check ${checked}" id="check-${si}-${li}" onclick="toggleDone(event,${si},${li})" title="Mark as done"></div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+    cont.appendChild(secEl);
+  });
+  updateProgress();
+}
+
+function toggleSection(si) {
+  const lecs = document.getElementById('lecs-'+si);
+  const chev = document.getElementById('chev-'+si);
+  lecs.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+function toggleDone(e, si, li) {
+  e.stopPropagation();
+  const id = getLecId(si,li);
+  done[id] = !done[id];
+  save();
+  const check = document.getElementById(`check-${si}-${li}`);
+  const row = document.getElementById(`row-${si}-${li}`);
+  if(done[id]) { check.classList.add('checked'); row.classList.add('done'); }
+  else { check.classList.remove('checked'); row.classList.remove('done'); }
+  const sec = curriculum[si];
+  const doneInSec = sec.lectures.filter((_,li2)=>done[getLecId(si,li2)]).length;
+  document.getElementById(`badge-${si}`).textContent = `${doneInSec}/${sec.lectures.length}`;
+  updateProgress();
+}
+
+function getPractice(e, lecTitle) {
+  e.stopPropagation();
+  sendPrompt(`I just watched the Neso Academy C++ lecture: "${lecTitle}". I have zero programming experience. Give me 3 beginner practice exercises for this topic with simple explanations. Keep it very easy and encouraging.`);
+}
+
+buildUI();
+</script>
