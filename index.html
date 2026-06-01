@@ -6,515 +6,834 @@
 <title>C++ Practice Tracker — Neso Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --bg2: #111118;
-    --bg3: #1a1a24;
-    --bg4: #222230;
-    --accent: #00ff88;
-    --accent2: #00cc6a;
-    --accent3: #7c3aed;
-    --text: #f0f0f8;
-    --text2: #9090b0;
-    --text3: #5a5a7a;
-    --border: #2a2a3a;
-    --border2: #3a3a4a;
-    --red: #ff4466;
-    --amber: #ffaa00;
-    --blue: #4488ff;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
+:root {
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#222230;
+  --accent:#00ff88;--accent2:#00cc6a;--purple:#7c3aed;
+  --text:#f0f0f8;--text2:#9090b0;--text3:#5a5a7a;
+  --border:#2a2a3a;--border2:#3a3a4a;
+  --red:#ff4466;--amber:#ffaa00;--blue:#4488ff;--cyan:#00ccff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 15%,rgba(124,58,237,0.07) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(0,255,136,0.04) 0%,transparent 55%);pointer-events:none;z-index:0;}
+.wrap{max-width:880px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z-index:1;}
 
-  /* Animated background */
-  body::before {
-    content: '';
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(ellipse at 20% 20%, rgba(124,58,237,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(0,255,136,0.05) 0%, transparent 50%);
-    pointer-events: none; z-index: 0;
-  }
+/* HEADER */
+header{margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid var(--border);}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:5px;}
+.logo-box{width:38px;height:38px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:#000;flex-shrink:0;}
+h1{font-size:24px;font-weight:800;letter-spacing:-0.5px;}
+h1 span{color:var(--accent);}
+.subtitle{font-size:13px;color:var(--text2);margin-top:3px;}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.5rem;}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 16px;}
+.stat-n{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent);}
+.stat-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-top:2px;}
+.prog-wrap{margin-top:1.5rem;}
+.prog-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:7px;}
+.prog-track{height:5px;background:var(--bg4);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;}
 
-  .wrapper { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; position: relative; z-index: 1; }
+/* SECTION */
+.section{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
+.section:hover{border-color:var(--border2);}
+.section.open{border-color:rgba(124,58,237,.4);}
+.sec-hdr{display:flex;align-items:center;gap:11px;padding:13px 17px;cursor:pointer;user-select:none;transition:background .15s;}
+.sec-hdr:hover{background:var(--bg3);}
+.sec-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.sec-ttl{font-size:14px;font-weight:600;color:var(--text);flex:1;}
+.sec-badge{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);background:var(--bg4);border:1px solid var(--border);border-radius:99px;padding:2px 8px;}
+.sec-badge.done{color:var(--accent);border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.06);}
+.chev{font-size:11px;color:var(--text3);transition:transform .22s;}
+.section.open .chev{transform:rotate(180deg);}
+.sec-body{display:none;border-top:1px solid var(--border);}
+.section.open .sec-body{display:block;}
 
-  /* Header */
-  header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
-  .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-  .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #000; flex-shrink: 0; }
-  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
-  h1 span { color: var(--accent); }
-  .subtitle { font-size: 13px; color: var(--text2); margin-top: 4px; font-weight: 400; }
-  .stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 1.5rem; }
-  .stat { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; }
-  .stat-num { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--accent); }
-  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+/* LECTURE ROW */
+.lec-row{display:flex;align-items:center;gap:9px;padding:10px 17px;border-bottom:1px solid var(--border);transition:background .12s;}
+.lec-row:last-child{border-bottom:none;}
+.lec-row:hover{background:var(--bg3);}
+.lec-row.done-row{opacity:.45;}
+.lec-row.done-row .lec-name{text-decoration:line-through;}
+.lec-n{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);min-width:26px;}
+.lec-name{font-size:13px;color:var(--text);flex:1;line-height:1.4;}
+.btn-prac{font-size:11px;font-family:'Syne',sans-serif;font-weight:600;padding:4px 10px;border-radius:6px;background:transparent;border:1px solid var(--border2);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .15s;}
+.btn-prac:hover{background:rgba(124,58,237,.15);border-color:var(--purple);color:var(--accent);}
+.lec-chk{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;}
+.lec-chk:hover{border-color:var(--accent);}
+.lec-chk.on{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
 
-  /* Progress */
-  .progress-wrap { margin-top: 1.5rem; }
-  .progress-meta { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: var(--text2); }
-  .progress-track { height: 6px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent3)); border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(7px);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;}
+.overlay.show{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;max-width:720px;width:100%;animation:popIn .25s cubic-bezier(.34,1.56,.64,1);margin:auto;}
+@keyframes popIn{from{transform:scale(.92) translateY(16px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.m-head{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.m-topic{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:600;margin-bottom:3px;font-family:'JetBrains Mono',monospace;}
+.m-title{font-size:15px;font-weight:700;color:var(--text);}
+.m-close{background:var(--bg4);border:1px solid var(--border);color:var(--text2);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.m-close:hover{background:var(--red);color:#fff;border-color:var(--red);}
+.m-body{padding:18px 20px;}
 
-  /* Section cards */
-  .section { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; }
-  .section:hover { border-color: var(--border2); }
-  .section.active { border-color: var(--accent3); }
+/* QUESTION CARD */
+.q-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden;}
+.q-top{padding:14px 16px 10px;}
+.q-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.q-num{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--purple);font-weight:600;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);border-radius:99px;padding:2px 8px;}
+.q-diff{font-size:10px;font-family:'JetBrains Mono',monospace;border-radius:99px;padding:2px 8px;}
+.diff-easy{color:var(--accent);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);}
+.diff-med{color:var(--amber);background:rgba(255,170,0,.08);border:1px solid rgba(255,170,0,.2);}
+.diff-hard{color:var(--red);background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.2);}
+.q-problem{font-size:13px;color:var(--text);line-height:1.65;font-weight:500;margin-bottom:8px;}
+.q-example{font-size:12px;color:var(--text2);background:var(--bg4);border-left:2px solid var(--purple);border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;line-height:1.6;}
+.q-hint-toggle{font-size:11px;color:var(--text3);cursor:pointer;border:none;background:none;padding:0;font-family:'Syne',sans-serif;transition:color .15s;}
+.q-hint-toggle:hover{color:var(--text2);}
+.q-hint{font-size:12px;color:var(--text2);padding:8px 10px;border-top:1px dashed var(--border2);margin-top:6px;line-height:1.6;display:none;}
+.q-hint.show{display:block;}
+.q-hint b{color:var(--amber);}
+.q-code-wrap{border-top:1px solid var(--border);}
+.q-code-label{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);padding:7px 14px 0;text-transform:uppercase;letter-spacing:.8px;}
+.q-code{font-size:12px;font-family:'JetBrains Mono',monospace;color:#c8d0e7;background:var(--bg);padding:10px 14px 12px;line-height:1.7;white-space:pre;overflow-x:auto;}
+.q-code .kw{color:#c792ea;}
+.q-code .fn{color:#82aaff;}
+.q-code .str{color:#c3e88d;}
+.q-code .cmt{color:#546e7a;font-style:italic;}
+.q-code .num{color:#f78c6c;}
+.q-actions{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--border);}
+.btn-run{font-size:11px;font-family:'Syne',sans-serif;font-weight:700;padding:5px 13px;border-radius:7px;background:var(--accent);color:#000;border:none;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+.btn-run:hover{background:#00ffaa;transform:translateY(-1px);}
+.btn-copy{font-size:11px;font-family:'Syne',sans-serif;font-weight:600;padding:5px 11px;border-radius:7px;background:transparent;border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .15s;}
+.btn-copy:hover{background:var(--bg4);color:var(--text);}
 
-  .sec-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; transition: background 0.15s; }
-  .sec-header:hover { background: var(--bg3); }
+.m-foot{padding:13px 20px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end;}
+.btn-mark{font-family:'Syne',sans-serif;font-weight:600;font-size:13px;padding:8px 18px;border-radius:8px;border:none;cursor:pointer;background:var(--accent);color:#000;transition:all .15s;}
+.btn-mark:hover{background:#00ffaa;}
+.btn-cancel{font-family:'Syne',sans-serif;font-weight:600;font-size:13px;padding:8px 18px;border-radius:8px;border:1px solid var(--border2);cursor:pointer;background:transparent;color:var(--text2);transition:all .15s;}
+.btn-cancel:hover{background:var(--bg4);}
 
-  .sec-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-  .sec-title { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
-  .sec-badge { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text3); background: var(--bg4); border: 1px solid var(--border); border-radius: 99px; padding: 2px 9px; }
-  .sec-badge.done { color: var(--accent); border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.05); }
-  .sec-chevron { font-size: 12px; color: var(--text3); transition: transform 0.25s; }
-  .section.open .sec-chevron { transform: rotate(180deg); }
+.toast{position:fixed;bottom:22px;right:22px;background:var(--bg3);border:1px solid var(--accent);color:var(--accent);padding:9px 16px;border-radius:9px;font-size:12px;font-weight:600;z-index:200;transform:translateY(50px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
 
-  /* Lectures */
-  .sec-body { display: none; border-top: 1px solid var(--border); }
-  .section.open .sec-body { display: block; }
-
-  .lec-row { display: flex; align-items: center; gap: 10px; padding: 11px 18px; border-bottom: 1px solid var(--border); transition: background 0.12s; }
-  .lec-row:last-child { border-bottom: none; }
-  .lec-row:hover { background: var(--bg3); }
-  .lec-row.completed { opacity: 0.5; }
-  .lec-row.completed .lec-name { text-decoration: line-through; }
-
-  .lec-num { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text3); min-width: 28px; }
-  .lec-name { font-size: 13px; color: var(--text); flex: 1; font-weight: 400; line-height: 1.4; }
-
-  .btn-practice { font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 600; padding: 5px 11px; border-radius: 6px; background: transparent; border: 1px solid var(--border2); color: var(--text2); cursor: pointer; white-space: nowrap; transition: all 0.15s; letter-spacing: 0.3px; }
-  .btn-practice:hover { background: rgba(124,58,237,0.15); border-color: var(--accent3); color: var(--accent); }
-
-  .lec-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border2); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 10px; }
-  .lec-check:hover { border-color: var(--accent); }
-  .lec-check.on { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
-
-  /* Modal */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
-  .modal-overlay.show { display: flex; }
-  .modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 18px; max-width: 680px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
-  @keyframes popIn { from { transform: scale(0.92) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-
-  .modal-head { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-  .modal-topic { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 600; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
-  .modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
-  .modal-close { background: var(--bg4); border: 1px solid var(--border); color: var(--text2); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
-  .modal-close:hover { background: var(--red); color: white; border-color: var(--red); }
-
-  .modal-body { overflow-y: auto; padding: 20px; flex: 1; }
-  .modal-body::-webkit-scrollbar { width: 4px; }
-  .modal-body::-webkit-scrollbar-track { background: transparent; }
-  .modal-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-  .q-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; transition: border-color 0.2s; }
-  .q-item:hover { border-color: var(--border2); }
-  .q-num { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--accent3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-  .q-text { font-size: 13px; color: var(--text); line-height: 1.6; font-weight: 500; }
-  .q-hint { font-size: 12px; color: var(--text2); margin-top: 6px; line-height: 1.5; padding-top: 6px; border-top: 1px dashed var(--border); }
-  .q-hint b { color: var(--amber); font-weight: 600; }
-
-  .modal-foot { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
-  .btn-done { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; padding: 9px 20px; border-radius: 9px; border: none; cursor: pointer; background: var(--accent); color: #000; transition: all 0.15s; }
-  .btn-done:hover { background: #00ffaa; transform: translateY(-1px); }
-  .btn-cancel { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; padding: 9px 20px; border-radius: 9px; border: 1px solid var(--border2); cursor: pointer; background: transparent; color: var(--text2); transition: all 0.15s; }
-  .btn-cancel:hover { background: var(--bg4); }
-
-  /* Toast */
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg3); border: 1px solid var(--accent); color: var(--accent); padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; z-index: 200; transform: translateY(60px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-  .toast.show { transform: translateY(0); opacity: 1; }
-
-  @media (max-width: 600px) {
-    h1 { font-size: 20px; }
-    .sec-header { padding: 12px 14px; }
-    .lec-row { padding: 10px 14px; gap: 8px; }
-    .btn-practice { display: none; }
-    .modal { max-height: 92vh; }
-  }
+@media(max-width:600px){
+  h1{font-size:19px;} .m-body{padding:14px 14px;} .overlay{padding:1rem .5rem;}
+}
 </style>
 </head>
 <body>
-
-<div class="wrapper">
+<div class="wrap">
   <header>
-    <div class="header-top">
-      <div>
-        <div class="logo">
-          <div class="logo-icon">C++</div>
-          <h1>Neso <span>C++</span> Tracker</h1>
-        </div>
-        <p class="subtitle">Track your progress · Practice after every lecture · Zero exp? No problem.</p>
-      </div>
+    <div class="logo-row">
+      <div class="logo-box">C++</div>
+      <h1>Neso <span>C++</span> Tracker</h1>
     </div>
-    <div class="stats-row">
-      <div class="stat"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Completed</div></div>
-      <div class="stat"><div class="stat-num" id="stat-left">50</div><div class="stat-label">Remaining</div></div>
-      <div class="stat"><div class="stat-num" id="stat-pct">0%</div><div class="stat-label">Progress</div></div>
+    <p class="subtitle">Watch lecture → open exercises → write real code → run it → mark done 🚀</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-n" id="s-done">0</div><div class="stat-l">Completed</div></div>
+      <div class="stat"><div class="stat-n" id="s-left">50</div><div class="stat-l">Remaining</div></div>
+      <div class="stat"><div class="stat-n" id="s-pct">0%</div><div class="stat-l">Progress</div></div>
     </div>
-    <div class="progress-wrap">
-      <div class="progress-meta"><span>Overall progress</span><span id="prog-text">0 / 50 lectures</span></div>
-      <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+    <div class="prog-wrap">
+      <div class="prog-meta"><span>Overall progress</span><span id="prog-txt">0 / 50 lectures</span></div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
     </div>
   </header>
-
-  <div id="sections-container"></div>
+  <div id="cont"></div>
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+<div class="overlay" id="overlay" onclick="closeOuter(event)">
   <div class="modal">
-    <div class="modal-head">
-      <div>
-        <div class="modal-topic" id="modal-topic"></div>
-        <div class="modal-title" id="modal-title"></div>
-      </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="m-head">
+      <div><div class="m-topic" id="m-topic"></div><div class="m-title" id="m-title"></div></div>
+      <button class="m-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-body" id="modal-body"></div>
-    <div class="modal-foot">
+    <div class="m-body" id="m-body"></div>
+    <div class="m-foot">
       <button class="btn-cancel" onclick="closeModal()">Close</button>
-      <button class="btn-done" onclick="markFromModal()">✓ Mark as done</button>
+      <button class="btn-mark" onclick="markFromModal()">✓ Mark lecture done</button>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-const COLORS = ['#7c3aed','#0ea5e9','#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899'];
-
-const data = [
+const curriculum = [
   {
-    title: "Introduction", color: COLORS[0], icon: "🚀",
-    lectures: [
-      "Introduction to C++ programming",
-      "Writing a simple C++ program",
-      "Installing source code editor and compiler",
-      "Compiling & executing C++ programs (Windows CMD)",
-      "Compiling & executing C++ programs (VS Code)"
-    ],
-    questions: [
-      { q: "What does #include <iostream> do and why do we need it at the top of every C++ program?", hint: "<b>Hint:</b> Think of it as importing a toolbox that gives you cin and cout." },
-      { q: "What is the purpose of int main() { } and why does every C++ program need exactly one main function?", hint: "<b>Hint:</b> The program starts executing from here — it's the entry door." },
-      { q: "What does return 0; mean at the end of main, and what happens if you forget to write it?", hint: "<b>Hint:</b> It tells the operating system whether your program ran successfully." },
-      { q: "What is the difference between cout and cin? Write a simple program that asks for your name and prints 'Hello, [name]!'", hint: "<b>Hint:</b> cout outputs, cin inputs. Use << for cout and >> for cin." },
-      { q: "What is a compiler and what does it do to your .cpp file? What file does it produce?", hint: "<b>Hint:</b> It translates human-readable C++ into machine code the computer can run." },
-      { q: "What is a syntax error? Write a small broken program and identify at least 2 syntax mistakes.", hint: "<b>Hint:</b> Missing semicolons, wrong brackets, typos in keywords are common causes." },
-      { q: "Write your very first C++ program that prints your name, your city, and your favourite number on three separate lines.", hint: "<b>Hint:</b> Use cout << ... << endl; three times inside main." },
-      { q: "What is the difference between .cpp and .exe files? Why can't you just share a .cpp file and run it on another computer?", hint: "<b>Hint:</b> One is source code, the other is a compiled executable for a specific OS." }
+    title:"Introduction", icon:"🚀", color:"#7c3aed",
+    lectures:["Introduction to C++ programming","Writing a simple C++ program","Installing source code editor and compiler","Compiling & executing C++ programs (Windows CMD)","Compiling & executing C++ programs (VS Code)"],
+    exercises:[
+      {
+        num:1, diff:"easy",
+        problem:"Write a program that prints exactly 3 lines:\nLine 1: Your name\nLine 2: Your city\nLine 3: The message 'I am learning C++'",
+        example:"Output:\nSai Teja\nPune\nI am learning C++",
+        hint:"Use <b>cout</b> three times. Each cout ends with <b>&lt;&lt; endl;</b> or <b>&lt;&lt; \"\\n\";</b>",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    // TODO: Print your name\n    cout << "___" << endl;\n\n    // TODO: Print your city\n    cout << "___" << endl;\n\n    // TODO: Print the message\n    cout << "___" << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:2, diff:"easy",
+        problem:"Write a program that asks the user to enter two numbers, then prints their SUM and PRODUCT.",
+        example:"Input: 4  5\nOutput:\nSum = 9\nProduct = 20",
+        hint:"Use <b>cin >> a >> b;</b> to read both numbers. Sum = a+b, Product = a*b.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int a, b;\n    cout << "Enter two numbers: ";\n    cin >> a >> b;\n\n    // TODO: Print sum\n    cout << "Sum = " << ___ << endl;\n\n    // TODO: Print product\n    cout << "Product = " << ___ << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:3, diff:"easy",
+        problem:"Write a program that asks the user for their age, then prints: 'In 10 years, you will be X years old.' where X = age + 10.",
+        example:"Input: 18\nOutput: In 10 years, you will be 28 years old.",
+        hint:"Read age into an int. Then print age + 10 inside the cout statement.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int age;\n    cout << "Enter your age: ";\n    cin >> ___;\n\n    // TODO: Print the message\n    cout << "In 10 years, you will be " << ___ << " years old." << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:4, diff:"medium",
+        problem:"Write a program that reads a temperature in Celsius and converts it to Fahrenheit.\nFormula: F = (C × 9/5) + 32",
+        example:"Input: 100\nOutput: 100°C = 212°F",
+        hint:"Use <b>float</b> for the temperature. Careful: 9/5 in int division = 1! Write <b>9.0/5</b> instead.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    float celsius, fahrenheit;\n    cout << "Enter temperature in Celsius: ";\n    cin >> celsius;\n\n    // TODO: Apply the formula F = (C * 9.0/5) + 32\n    fahrenheit = ___;\n\n    cout << celsius << "C = " << fahrenheit << "F" << endl;\n    return 0;\n}`
+      },
+      {
+        num:5, diff:"medium",
+        problem:"Write a program that reads the radius of a circle and prints its AREA and CIRCUMFERENCE.\nArea = π × r²    Circumference = 2 × π × r\nUse π = 3.14159",
+        example:"Input: 7\nOutput:\nArea = 153.938\nCircumference = 43.9823",
+        hint:"Declare <b>const float PI = 3.14159;</b>. Area = PI * r * r. Circumference = 2 * PI * r.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    const float PI = 3.14159;\n    float r;\n    cout << "Enter radius: ";\n    cin >> r;\n\n    float area = ___;\n    float circ = ___;\n\n    cout << "Area = " << area << endl;\n    cout << "Circumference = " << circ << endl;\n    return 0;\n}`
+      },
+      {
+        num:6, diff:"medium",
+        problem:"Simple bill calculator: Read item name, price per unit, and quantity. Print a formatted receipt showing the total.",
+        example:"Input: Apple  20  5\nOutput:\nItem: Apple\nPrice: 20\nQty: 5\nTotal: 100",
+        hint:"Use <b>string</b> for the item name. Total = price * quantity.",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string item;\n    float price;\n    int qty;\n\n    cout << "Item name: ";  cin >> item;\n    cout << "Price: ";      cin >> price;\n    cout << "Quantity: ";   cin >> qty;\n\n    float total = ___;\n\n    cout << "\\n--- Receipt ---" << endl;\n    cout << "Item: " << item << endl;\n    cout << "Price: " << price << endl;\n    cout << "Qty: " << qty << endl;\n    cout << "Total: " << ___ << endl;\n    return 0;\n}`
+      },
+      {
+        num:7, diff:"hard",
+        problem:"Write a program to swap two numbers WITHOUT using a third (temp) variable.\nHint: Use math — add and subtract!",
+        example:"Input: a=5 b=9\nOutput:\nBefore: a=5 b=9\nAfter:  a=9 b=5",
+        hint:"The trick: <b>a = a + b;</b> then <b>b = a - b;</b> then <b>a = a - b;</b>. Try to understand why it works!",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int a = 5, b = 9;\n    cout << "Before: a=" << a << " b=" << b << endl;\n\n    // TODO: Swap without a temp variable\n    a = ___;\n    b = ___;\n    a = ___;\n\n    cout << "After:  a=" << a << " b=" << b << endl;\n    return 0;\n}`
+      },
+      {
+        num:8, diff:"hard",
+        problem:"Write a program that reads 3 numbers and prints the AVERAGE, and also says whether the average is above or below 50.",
+        example:"Input: 40 60 70\nOutput:\nAverage = 56.67\nAbove average passing mark!",
+        hint:"Average = (a + b + c) / 3.0 — use 3.0 not 3 to get a decimal result. Then use if/else.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    float a, b, c;\n    cout << "Enter 3 numbers: ";\n    cin >> a >> b >> c;\n\n    float avg = ___;\n    cout << "Average = " << avg << endl;\n\n    if (___ > 50) {\n        cout << "Above average passing mark!" << endl;\n    } else {\n        cout << "Below passing mark. Keep practising!" << endl;\n    }\n    return 0;\n}`
+      }
     ]
   },
   {
-    title: "Input, Output & Basics", color: COLORS[1], icon: "💻",
-    lectures: [
-      "Input and output in C++",
-      "Namespaces in C++",
-      "Comments in C++",
-      "Comments in C++ (exercise)"
-    ],
-    questions: [
-      { q: "What is 'std::' and why do we write 'using namespace std;' — what problem does it solve?", hint: "<b>Hint:</b> Without it you'd have to write std::cout, std::cin every single time." },
-      { q: "What is the difference between endl and '\\n'? When would you prefer one over the other?", hint: "<b>Hint:</b> endl flushes the buffer; \\n is faster but doesn't flush." },
-      { q: "Write a program that reads TWO integers from the user and prints their sum, difference, and product.", hint: "<b>Hint:</b> Declare two int variables, use cin >> a >> b; to read both at once." },
-      { q: "What are single-line comments (//) and multi-line comments (/* */)? Write a well-commented Hello World program.", hint: "<b>Hint:</b> Comments are ignored by the compiler — they're notes for humans." },
-      { q: "Write a program that reads your age and prints: 'You are X years old and will turn Y next year.'", hint: "<b>Hint:</b> Y = age + 1. String concatenation happens naturally with multiple << operators." },
-      { q: "What is a namespace? Why did C++ introduce namespaces — what problem were they solving?", hint: "<b>Hint:</b> Imagine two libraries both having a function called 'print' — namespaces avoid that clash." },
-      { q: "What happens if you type cin >> x but the user enters a letter when x is an int? What kind of problem does this cause?", hint: "<b>Hint:</b> cin fails silently and x gets garbage — input validation matters." },
-      { q: "Write a program that outputs a simple formatted receipt: item name, price, quantity on separate lines, then the total at the bottom.", hint: "<b>Hint:</b> Use \\t for tab alignment. total = price * quantity." }
+    title:"Input, Output & Basics", icon:"💻", color:"#0ea5e9",
+    lectures:["Input and output in C++","Namespaces in C++","Comments in C++","Comments in C++ (exercise)"],
+    exercises:[
+      {
+        num:1, diff:"easy",
+        problem:"Write a program that asks for the user's first name and last name separately, then prints: 'Hello, FirstName LastName! Nice to meet you.'",
+        example:"Input: Sai Teja\nOutput: Hello, Sai Teja! Nice to meet you.",
+        hint:"Use two <b>string</b> variables. Read with <b>cin >> first >> last;</b>",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string first, last;\n    cout << "First name: ";  cin >> first;\n    cout << "Last name: ";   cin >> last;\n\n    // TODO: Print the greeting\n    cout << "Hello, " << ___ << " " << ___ << "! Nice to meet you." << endl;\n    return 0;\n}`
+      },
+      {
+        num:2, diff:"easy",
+        problem:"Write a program that reads a full sentence from the user (with spaces) using getline, then prints how many characters are in the sentence.",
+        example:"Input: I love coding\nOutput: Your sentence has 13 characters.",
+        hint:"Use <b>getline(cin, sentence)</b> to read a full line with spaces. Use <b>sentence.length()</b> for the count.",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string sentence;\n    cout << "Enter a sentence: ";\n    getline(cin, ___);\n\n    cout << "Your sentence has " << ___.length() << " characters." << endl;\n    return 0;\n}`
+      },
+      {
+        num:3, diff:"easy",
+        problem:"Without using 'using namespace std;', rewrite a program that prints 'Hello World' — you'll need to add std:: before cout and endl.",
+        example:"Output: Hello World",
+        hint:"Replace <b>cout</b> with <b>std::cout</b> and <b>endl</b> with <b>std::endl</b>. This is why namespaces exist!",
+        code:`#include <iostream>\n// Note: NO 'using namespace std;' this time!\n\nint main() {\n    // TODO: Print Hello World using std::cout\n    ___::cout << "Hello World" << ___::endl;\n    return 0;\n}`
+      },
+      {
+        num:4, diff:"medium",
+        problem:"Write a well-commented program that calculates simple interest.\nFormula: SI = (Principal × Rate × Time) / 100\nAdd a comment explaining each line.",
+        example:"Input: P=1000 R=5 T=2\nOutput: Simple Interest = 100",
+        hint:"Use // for single-line comments explaining each step. Good comments = good programmer habit!",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    // Variables to store principal, rate and time\n    float p, r, t;\n\n    // TODO: Read input from user\n    cout << "Principal: ";  cin >> p;\n    cout << "Rate (%): ";   cin >> r;\n    cout << "Time (yrs): "; cin >> t;\n\n    // TODO: Calculate simple interest using the formula\n    float si = ___;\n\n    // TODO: Print result\n    cout << "Simple Interest = " << ___ << endl;\n    return 0;\n}`
+      },
+      {
+        num:5, diff:"medium",
+        problem:"Write a program that reads a distance in kilometres and converts it to:\n- Miles (1 km = 0.621371 miles)\n- Metres (1 km = 1000 m)\n- Centimetres",
+        example:"Input: 5\nOutput:\n5 km = 3.107 miles\n5 km = 5000 metres\n5 km = 500000 cm",
+        hint:"Declare the conversion factor as a <b>const float</b>. Multiply for each unit.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    float km;\n    cout << "Enter distance in km: ";\n    cin >> km;\n\n    const float KM_TO_MILES = 0.621371;\n\n    cout << km << " km = " << ___ << " miles" << endl;\n    cout << km << " km = " << ___ << " metres" << endl;\n    cout << km << " km = " << ___ << " cm" << endl;\n    return 0;\n}`
+      },
+      {
+        num:6, diff:"medium",
+        problem:"Write a program that reads a person's weight in KG and height in metres, then calculates their BMI.\nFormula: BMI = weight / (height × height)",
+        example:"Input: weight=70 height=1.75\nOutput: BMI = 22.86",
+        hint:"Use <b>float</b> for both variables. BMI = weight / (height * height).",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    float weight, height;\n    cout << "Weight (kg): ";  cin >> weight;\n    cout << "Height (m): ";   cin >> height;\n\n    float bmi = ___;\n    cout << "Your BMI = " << bmi << endl;\n    return 0;\n}`
+      },
+      {
+        num:7, diff:"hard",
+        problem:"Write a program that reads a 3-digit number from the user and prints:\n1. Its individual digits (hundreds, tens, ones)\n2. The sum of its digits\n3. The reverse of the number",
+        example:"Input: 453\nOutput:\nHundreds=4  Tens=5  Ones=3\nDigit sum = 12\nReverse = 354",
+        hint:"Hundreds = n/100. Tens = (n%100)/10. Ones = n%10. Reverse = ones*100 + tens*10 + hundreds.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << "Enter a 3-digit number: ";\n    cin >> n;\n\n    int hundreds = n / 100;\n    int tens     = (n % 100) / 10;\n    int ones     = n % 10;\n\n    cout << "Hundreds=" << hundreds << "  Tens=" << tens << "  Ones=" << ones << endl;\n    cout << "Digit sum = " << ___ << endl;\n    cout << "Reverse = " << ___ << endl;\n    return 0;\n}`
+      },
+      {
+        num:8, diff:"hard",
+        problem:"Time converter: Read a number of seconds from the user and convert it to HH:MM:SS format.",
+        example:"Input: 3725 seconds\nOutput: 1:02:05",
+        hint:"Hours = seconds/3600. Minutes = (seconds%3600)/60. Remaining seconds = seconds%60.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int total;\n    cout << "Enter total seconds: ";\n    cin >> total;\n\n    int hours   = total / 3600;\n    int minutes = (total % 3600) / 60;\n    int secs    = total % 60;\n\n    cout << hours << ":" << ___ << ":" << ___ << endl;\n    return 0;\n}`
+      }
     ]
   },
   {
-    title: "Control Flow", color: COLORS[2], icon: "🔀",
-    lectures: [
-      "The 'while' statement in C++",
-      "The 'for' statement in C++",
-      "Reading an unknown number of inputs in C++",
-      "The 'if-else' statement in C++",
-      "The 'else-if' statement in C++",
-      "C++ program to count consecutive inputs"
-    ],
-    questions: [
-      { q: "Write a program using a for loop that prints all numbers from 1 to 20. Then modify it to print only even numbers.", hint: "<b>Hint:</b> For even numbers, check if i % 2 == 0, or simply use i += 2 in the loop." },
-      { q: "Write a while loop that keeps asking the user to enter a number until they enter 0, then prints how many numbers they entered.", hint: "<b>Hint:</b> Use a counter variable. The loop condition is: while (input != 0)." },
-      { q: "Write a program that asks a user's marks (0-100) and prints: Distinction (≥85), Merit (≥70), Pass (≥50), or Fail (<50).", hint: "<b>Hint:</b> Use if-else if-else ladder. Check from highest to lowest condition." },
-      { q: "What is an infinite loop? Write one intentionally using while(true), then explain how you would safely exit it.", hint: "<b>Hint:</b> Use break; to exit. A real use case: menus that keep showing until the user quits." },
-      { q: "Write a program using nested loops that prints this pattern: row 1 has 1 star, row 2 has 2 stars, up to row 5.", hint: "<b>Hint:</b> Outer loop = rows, inner loop = stars. Use cout << '*' in the inner loop." },
-      { q: "What is the difference between a while loop and a do-while loop? Write the same program using both and show the difference.", hint: "<b>Hint:</b> do-while always runs at least once even if the condition is false from the start." },
-      { q: "Write a program that reads numbers from the user until EOF (Ctrl+D/Ctrl+Z) and prints the sum and count of all numbers entered.", hint: "<b>Hint:</b> Use: while(cin >> x) { ... } — this loops until input fails." },
-      { q: "Write a simple number guessing game: computer picks 7, user guesses until correct. Print 'Too high', 'Too low', or 'Correct!'", hint: "<b>Hint:</b> Use a while loop + if-else. Later you can use rand() to pick random numbers." }
+    title:"Control Flow", icon:"🔀", color:"#f59e0b",
+    lectures:["The 'while' statement in C++","The 'for' statement in C++","Reading an unknown number of inputs in C++","The 'if-else' statement in C++","The 'else-if' statement in C++","C++ program to count consecutive inputs"],
+    exercises:[
+      {
+        num:1, diff:"easy",
+        problem:"Check if a number is POSITIVE, NEGATIVE, or ZERO using if-else if-else.",
+        example:"Input: -5\nOutput: -5 is Negative",
+        hint:"Three conditions: >0, <0, ==0. Use if / else if / else.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << "Enter a number: ";\n    cin >> n;\n\n    if (___ > 0) {\n        cout << n << " is Positive" << endl;\n    } else if (___ < 0) {\n        cout << n << " is Negative" << endl;\n    } else {\n        cout << n << " is Zero" << endl;\n    }\n    return 0;\n}`
+      },
+      {
+        num:2, diff:"easy",
+        problem:"Check if a number is ODD or EVEN using the modulus operator %.\nThen tell the user if it's also divisible by 5.",
+        example:"Input: 10\nOutput:\n10 is Even\nAlso divisible by 5!",
+        hint:"Even check: n%2 == 0. Divisible by 5: n%5 == 0.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cin >> n;\n\n    if (n % ___ == 0)\n        cout << n << " is Even" << endl;\n    else\n        cout << n << " is Odd" << endl;\n\n    if (n % ___ == 0)\n        cout << "Also divisible by 5!" << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:3, diff:"easy",
+        problem:"Grade calculator: Read marks out of 100 and print the grade.\n≥90→A  ≥80→B  ≥70→C  ≥60→D  <60→Fail",
+        example:"Input: 75\nOutput: Grade = C",
+        hint:"Use a chain of <b>if / else if / else</b>. Start checking from the highest mark downward.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int marks;\n    cout << "Enter marks (0-100): ";\n    cin >> marks;\n\n    if (marks >= 90)\n        cout << "Grade = A" << endl;\n    else if (marks >= ___)\n        cout << "Grade = B" << endl;\n    else if (marks >= ___)\n        cout << "Grade = C" << endl;\n    else if (marks >= ___)\n        cout << "Grade = D" << endl;\n    else\n        cout << "Grade = Fail" << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:4, diff:"easy",
+        problem:"Multiplication table: Read a number from the user and print its multiplication table from 1 to 10 using a for loop.",
+        example:"Input: 5\nOutput:\n5 x 1 = 5\n5 x 2 = 10\n...\n5 x 10 = 50",
+        hint:"Use <b>for(int i=1; i<=10; i++)</b>. Inside the loop, print: n << \" x \" << i << \" = \" << n*i",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << "Enter a number: ";\n    cin >> n;\n\n    for(int i = 1; i <= 10; ___) {\n        cout << n << " x " << i << " = " << ___ << endl;\n    }\n    return 0;\n}`
+      },
+      {
+        num:5, diff:"medium",
+        problem:"FizzBuzz: Print numbers 1 to 50. But:\n- Print 'Fizz' for multiples of 3\n- Print 'Buzz' for multiples of 5\n- Print 'FizzBuzz' for multiples of both",
+        example:"1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz ...",
+        hint:"Check divisibility by BOTH first: if(i%3==0 && i%5==0). Then check each alone. Order matters!",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    for(int i = 1; i <= 50; i++) {\n        if(i % 3 == 0 && i % 5 == 0)\n            cout << "FizzBuzz ";\n        else if(i % ___ == 0)\n            cout << "Fizz ";\n        else if(i % ___ == 0)\n            cout << "Buzz ";\n        else\n            cout << ___ << " ";\n    }\n    return 0;\n}`
+      },
+      {
+        num:6, diff:"medium",
+        problem:"Sum of digits: Read a positive integer and find the sum of all its digits.\nE.g. 1234 → 1+2+3+4 = 10",
+        example:"Input: 4567\nOutput: Sum of digits = 22",
+        hint:"Loop while n>0. Each step: get last digit with <b>n%10</b>, add it to sum, then remove it with <b>n/=10</b>.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int n, sum = 0;\n    cout << "Enter a number: ";\n    cin >> n;\n\n    while(___ > 0) {\n        sum += n % 10;  // add last digit\n        n /= 10;        // remove last digit\n    }\n\n    cout << "Sum of digits = " << sum << endl;\n    return 0;\n}`
+      },
+      {
+        num:7, diff:"medium",
+        problem:"Star triangle: Print a right-angled triangle of stars with 5 rows.\nRow 1: 1 star\nRow 2: 2 stars ... Row 5: 5 stars",
+        example:"Output:\n*\n**\n***\n****\n*****",
+        hint:"Outer loop = row number (1 to 5). Inner loop prints stars (1 to i). After inner loop: cout << endl.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    for(int i = 1; i <= 5; i++) {\n        for(int j = 1; j <= ___; j++) {\n            cout << "*";\n        }\n        cout << endl;\n    }\n    return 0;\n}`
+      },
+      {
+        num:8, diff:"hard",
+        problem:"Check if a number is PRIME.\nA prime number is divisible only by 1 and itself.\nThen print all prime numbers from 2 to 50.",
+        example:"Primes: 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47",
+        hint:"For each n, check if any number from 2 to n-1 divides it evenly. If none do, it's prime. Nested loops!",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Prime numbers from 2 to 50:" << endl;\n\n    for(int n = 2; n <= 50; n++) {\n        bool isPrime = true;\n\n        for(int i = 2; i < n; i++) {\n            if(n % i == 0) {\n                isPrime = ___; // not prime\n                break;\n            }\n        }\n\n        if(___)\n            cout << n << " ";\n    }\n    return 0;\n}`
+      }
     ]
   },
   {
-    title: "Variables & Types", color: COLORS[3], icon: "📦",
-    lectures: [
-      "Primitive built-in types in C++",
-      "Variables in C++",
-      "Compound types — references & pointers",
-      "The const qualifier in C++",
-      "Dealing with types in C++"
-    ],
-    questions: [
-      { q: "What are the 6 primitive data types in C++ (int, float, double, char, bool, void)? Write a program declaring one of each and printing them.", hint: "<b>Hint:</b> sizeof(int)=4, sizeof(double)=8 on most systems. Print sizes with sizeof()." },
-      { q: "What is the difference between int and long long? When would you use long long instead of int?", hint: "<b>Hint:</b> int holds up to ~2 billion. long long holds up to ~9.2 quintillion. Use for big numbers." },
-      { q: "What is a reference variable in C++? Write a program showing that changing a reference also changes the original variable.", hint: "<b>Hint:</b> int& ref = x; — ref is an alias for x. They share the same memory address." },
-      { q: "What does const mean? Write a program with a const PI = 3.14159 and show what error you get when you try to change it.", hint: "<b>Hint:</b> const values are read-only. The compiler will reject any assignment to them." },
-      { q: "What is type casting? Write a program that divides 7 by 2 and shows the difference between int division and float division.", hint: "<b>Hint:</b> 7/2 = 3 (int), but (float)7/2 = 3.5. Cast one operand to float." },
-      { q: "What is the difference between float and double? Write a program showing precision differences when storing 3.14159265358979.", hint: "<b>Hint:</b> float has ~7 decimal digits precision, double has ~15. See where they start to differ." },
-      { q: "What is overflow? Write a program that stores INT_MAX in an int and adds 1 — what unexpected result do you get and why?", hint: "<b>Hint:</b> INT_MAX is 2147483647. Adding 1 wraps around to -2147483648 (overflow)." },
-      { q: "What is the 'auto' keyword in C++? Write a program using auto for 3 different variable types and explain how C++ figures out the type.", hint: "<b>Hint:</b> auto x = 5 makes x an int. auto y = 3.14 makes y a double. Compiler infers the type." }
+    title:"Variables & Types", icon:"📦", color:"#10b981",
+    lectures:["Primitive built-in types in C++","Variables in C++","Compound types — references & pointers","The const qualifier in C++","Dealing with types in C++"],
+    exercises:[
+      {
+        num:1, diff:"easy",
+        problem:"Declare one variable of each type: int, float, double, char, bool. Assign values and print all of them with their sizeof() in bytes.",
+        example:"int: 42 (4 bytes)\nfloat: 3.14 (4 bytes)\ndouble: 3.14159 (8 bytes)\nchar: A (1 byte)\nbool: 1 (1 byte)",
+        hint:"sizeof(int) gives the size. bool prints as 0 or 1.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int    a = 42;\n    float  b = 3.14;\n    double c = 3.14159;\n    char   d = 'A';\n    bool   e = true;\n\n    cout << "int: "    << a << " (" << sizeof(a) << " bytes)" << endl;\n    cout << "float: "  << ___ << " (" << sizeof(___) << " bytes)" << endl;\n    cout << "double: " << ___ << " (" << sizeof(___) << " bytes)" << endl;\n    cout << "char: "   << ___ << " (" << sizeof(___) << " bytes)" << endl;\n    cout << "bool: "   << ___ << " (" << sizeof(___) << " bytes)" << endl;\n    return 0;\n}`
+      },
+      {
+        num:2, diff:"easy",
+        problem:"Show the difference between INT division and FLOAT division.\nCalculate 7÷2 as integer, then as float — see the difference!",
+        example:"Integer division: 7/2 = 3\nFloat division:   7.0/2 = 3.5",
+        hint:"Integer division truncates decimals. Cast to float: <b>(float)7 / 2</b> or use <b>7.0 / 2</b>.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int a = 7, b = 2;\n\n    cout << "Integer division: " << a/b << endl;\n    cout << "Float division:   " << (float)a / b << endl;\n\n    // Try: what does 10/3 give as int? And as float?\n    cout << "10/3 (int) = " << ___ << endl;\n    cout << "10/3 (float) = " << (float)___ / ___ << endl;\n    return 0;\n}`
+      },
+      {
+        num:3, diff:"medium",
+        problem:"Demonstrate the const keyword.\nStore PI = 3.14159 as a const and calculate area of a circle. Then try changing PI and see the compiler error.",
+        example:"Enter radius: 5\nArea of circle = 78.54",
+        hint:"<b>const float PI = 3.14159;</b> — Try uncommenting <b>PI = 3;</b> to see the error message.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    const float PI = ___;\n    float r;\n\n    cout << "Enter radius: ";\n    cin >> r;\n\n    float area = PI * r * r;\n    cout << "Area of circle = " << area << endl;\n\n    // Uncomment next line to see the compile error:\n    // PI = 3;  <-- This will fail!\n\n    return 0;\n}`
+      },
+      {
+        num:4, diff:"medium",
+        problem:"Reference variable demo:\nCreate int x = 10. Make a reference ref = x.\nChange ref to 99. Show that x also becomes 99.",
+        example:"x = 10\nref = 10\nChanged ref to 99...\nx = 99  (x changed too!)",
+        hint:"<b>int& ref = x;</b> — ref is just another name for x. They share the same memory.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int x = 10;\n    int& ref = ___; // ref is a reference to x\n\n    cout << "x = " << x << endl;\n    cout << "ref = " << ref << endl;\n\n    ref = 99; // change ref\n\n    cout << "Changed ref to 99..." << endl;\n    cout << "x = " << ___ << endl; // x changed too!\n    return 0;\n}`
+      },
+      {
+        num:5, diff:"medium",
+        problem:"Demonstrate integer OVERFLOW.\nStore the maximum value of int (2147483647), then add 1 to it. What happens?",
+        example:"Max int = 2147483647\nMax int + 1 = -2147483648  (overflow!)",
+        hint:"Include <b>&lt;climits&gt;</b> to access <b>INT_MAX</b>. Overflow wraps around to the most negative number.",
+        code:`#include <iostream>\n#include <climits>\nusing namespace std;\n\nint main() {\n    int maxVal = INT_MAX;\n    cout << "Max int = " << maxVal << endl;\n    cout << "Max int + 1 = " << maxVal + 1 << endl;\n    // This is OVERFLOW — the number wraps around!\n\n    // Also try: what is INT_MIN?\n    cout << "Min int = " << ___ << endl;\n    return 0;\n}`
+      },
+      {
+        num:6, diff:"medium",
+        problem:"Type casting practice:\nRead marks as int. Calculate percentage as float.\nThen display grade using type casting.",
+        example:"Marks obtained: 45\nTotal marks: 60\nPercentage = 75%",
+        hint:"Percentage = (float)obtained / total * 100. Without the (float) cast you'd get int division!",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int obtained, total;\n    cout << "Marks obtained: ";  cin >> obtained;\n    cout << "Total marks: ";     cin >> total;\n\n    float percentage = (float)___ / ___ * 100;\n    cout << "Percentage = " << percentage << "%" << endl;\n\n    if(percentage >= 75) cout << "Distinction!" << endl;\n    else if(percentage >= 60) cout << "First Class" << endl;\n    else if(percentage >= 50) cout << "Second Class" << endl;\n    else cout << "Fail" << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:7, diff:"hard",
+        problem:"Check if a number is a PALINDROME.\nA palindrome reads the same forwards and backwards.\n121 → palindrome ✓   123 → not ✗",
+        example:"Input: 12321\nOutput: 12321 is a Palindrome!",
+        hint:"Reverse the number using a while loop (like the digit sum problem). If reversed == original, it's a palindrome.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int n, original, reversed = 0, digit;\n    cout << "Enter a number: ";\n    cin >> n;\n    original = n;\n\n    while(n > 0) {\n        digit    = n % 10;\n        reversed = reversed * 10 + digit;\n        n        = n / 10;\n    }\n\n    if(original == ___)\n        cout << original << " is a Palindrome!" << endl;\n    else\n        cout << original << " is NOT a palindrome." << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:8, diff:"hard",
+        problem:"Armstrong number checker: A number is Armstrong if sum of cubes of its digits equals the number itself.\n153 = 1³ + 5³ + 3³ = 1+125+27 = 153 ✓",
+        example:"Input: 153\nOutput: 153 is an Armstrong number!\nPrint all Armstrong numbers from 1 to 999.",
+        hint:"Extract each digit with %10. Cube it (d*d*d). Keep adding. If sum == original, it's Armstrong.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Armstrong numbers (1-999):" << endl;\n\n    for(int n = 1; n <= 999; n++) {\n        int temp = n, sum = 0, digit;\n\n        while(temp > 0) {\n            digit = temp % 10;\n            sum  += digit * digit * digit; // cube\n            temp /= 10;\n        }\n\n        if(sum == ___)\n            cout << n << " ";\n    }\n    return 0;\n}`
+      }
     ]
   },
   {
-    title: "Operators", color: COLORS[4], icon: "⚙️",
-    lectures: [
-      "Arithmetic operators in C++",
-      "Logical operators in C++",
-      "Relational operators in C++",
-      "Assignment operators in C++",
-      "Increment & decrement operators"
-    ],
-    questions: [
-      { q: "What does the modulus operator (%) do? Write a program that uses % to check if a number is even or odd.", hint: "<b>Hint:</b> If n % 2 == 0, it's even. If n % 2 == 1, it's odd." },
-      { q: "What is the difference between i++ and ++i? Write a program that clearly demonstrates the different behaviour of each.", hint: "<b>Hint:</b> i++ returns current value then increments. ++i increments first then returns new value." },
-      { q: "What do &&, ||, and ! do? Write a program that checks if a number is between 1 and 100 (inclusive) using && and prints the result.", hint: "<b>Hint:</b> if (n >= 1 && n <= 100). The && means both conditions must be true." },
-      { q: "What is the difference between = (assignment) and == (equality)? Write a program showing the common beginner bug of using = inside an if condition.", hint: "<b>Hint:</b> if (x = 5) always succeeds because it assigns 5. if (x == 5) checks equality." },
-      { q: "What do +=, -=, *=, /= mean? Rewrite 'x = x + 10' using shorthand operators for all four arithmetic operations.", hint: "<b>Hint:</b> x += 10 is identical to x = x + 10. These are compound assignment operators." },
-      { q: "What is operator precedence? Write the expression 2 + 3 * 4 - 1 and show step by step how C++ evaluates it.", hint: "<b>Hint:</b> Multiplication happens before addition. Result is 2 + 12 - 1 = 13, not 19." },
-      { q: "Write a program that reads a year and checks if it's a leap year using logical operators. (Divisible by 4, but not 100, unless also divisible by 400)", hint: "<b>Hint:</b> (year%4==0 && year%100!=0) || (year%400==0). Test with 2000, 1900, 2024." },
-      { q: "What is short-circuit evaluation in C++? Show with code why false && someFunction() never calls someFunction.", hint: "<b>Hint:</b> If first part of && is false, C++ skips the second part entirely — no need to check." }
+    title:"Operators", icon:"⚙️", color:"#ef4444",
+    lectures:["Arithmetic operators in C++","Logical operators in C++","Relational operators in C++","Assignment operators in C++","Increment & decrement operators"],
+    exercises:[
+      {
+        num:1, diff:"easy",
+        problem:"Write a calculator: read two numbers and an operator (+, -, *, /). Print the result.",
+        example:"Input: 10 + 5\nOutput: 10 + 5 = 15",
+        hint:"Read char op. Use if/else to check which operator. Watch out for division by zero!",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    float a, b;\n    char op;\n    cout << "Enter: num op num (e.g. 10 + 5): ";\n    cin >> a >> op >> b;\n\n    if(op == '+')\n        cout << a << " + " << b << " = " << a+b << endl;\n    else if(op == '-')\n        cout << a << " - " << b << " = " << ___ << endl;\n    else if(op == '*')\n        cout << a << " * " << b << " = " << ___ << endl;\n    else if(op == '/')\n        cout << a << " / " << b << " = " << ___ << endl;\n    else\n        cout << "Unknown operator!" << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:2, diff:"easy",
+        problem:"Leap year checker: A year is a leap year if:\n- Divisible by 4 AND not by 100\n- OR divisible by 400",
+        example:"Input: 2024\nOutput: 2024 is a Leap Year!",
+        hint:"Condition: <b>(year%4==0 && year%100!=0) || (year%400==0)</b>. Test: 2000✓ 1900✗ 2024✓",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int year;\n    cout << "Enter a year: ";\n    cin >> year;\n\n    if((___ % 4 == 0 && ___ % 100 != 0) || (___ % 400 == 0))\n        cout << year << " is a Leap Year!" << endl;\n    else\n        cout << year << " is NOT a leap year." << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:3, diff:"easy",
+        problem:"Demonstrate the difference between i++ and ++i by assigning both to new variables and printing the results.",
+        example:"a = i++ → a=5, i becomes 6\nb = ++i → i becomes 7, b=7",
+        hint:"int a = i++ assigns THEN increments. int b = ++i increments THEN assigns. Watch the order!",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int i = 5;\n    int a = i++;  // post-increment\n    cout << "After a = i++: a=" << a << ", i=" << i << endl;\n\n    int b = ++i;  // pre-increment\n    cout << "After b = ++i: b=" << b << ", i=" << i << endl;\n\n    // What do you expect here?\n    int x = 10;\n    cout << "x++ = " << ___ << endl;  // prints 10\n    cout << "++x = " << ___ << endl;  // prints 12\n    return 0;\n}`
+      },
+      {
+        num:4, diff:"medium",
+        problem:"Find the LARGEST of three numbers using only if-else and relational operators (>, <, ==). No max() function!",
+        example:"Input: 34 78 21\nOutput: Largest = 78",
+        hint:"Compare a with b first. If a>b, compare a with c. Else compare b with c.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int a, b, c;\n    cout << "Enter 3 numbers: ";\n    cin >> a >> b >> c;\n\n    int largest;\n    if(a >= b && a >= c)\n        largest = a;\n    else if(___ >= a && ___ >= c)\n        largest = b;\n    else\n        largest = c;\n\n    cout << "Largest = " << largest << endl;\n    return 0;\n}`
+      },
+      {
+        num:5, diff:"medium",
+        problem:"Compound assignment practice:\nStart with x=100. Apply: +=20, -=15, *=2, /=5 in sequence. Print x after each operation.",
+        example:"Start: 100\nAfter +=20: 120\nAfter -=15: 105\nAfter *=2: 210\nAfter /=5: 42",
+        hint:"Each compound assignment modifies x in-place. x += 20 is the same as x = x + 20.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int x = 100;\n    cout << "Start: " << x << endl;\n\n    x += 20;   cout << "After +=20: " << x << endl;\n    x ___ 15;  cout << "After -=15: " << x << endl;\n    x ___ 2;   cout << "After *=2: "  << x << endl;\n    x ___ 5;   cout << "After /=5: "  << x << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:6, diff:"medium",
+        problem:"Ternary operator practice: Read a number. Using ONLY the ternary operator (?:), print whether it's:\n1. Positive/Negative\n2. Even/Odd",
+        example:"Input: -4\nOutput:\n-4 is Negative\n-4 is Even",
+        hint:"Syntax: <b>condition ? value_if_true : value_if_false</b>. Can be used directly inside cout.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << "Enter a number: ";\n    cin >> n;\n\n    // Use ternary operator (?:) — no if/else allowed!\n    cout << n << " is " << (n >= 0 ? "Positive" : "Negative") << endl;\n    cout << n << " is " << (n % 2 == 0 ? ___ : ___) << endl;\n\n    return 0;\n}`
+      },
+      {
+        num:7, diff:"hard",
+        problem:"Operator precedence puzzle: WITHOUT running the code, predict the output of each expression. Then verify by running.",
+        example:"2 + 3 * 4 = ?\n10 - 2 + 3 = ?\n5 * 6 / 3 - 2 = ?",
+        hint:"Multiplication/division happen BEFORE addition/subtraction. Same priority = left to right.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    // PREDICT first, then run!\n    cout << 2 + 3 * 4      << endl;  // = ?\n    cout << 10 - 2 + 3     << endl;  // = ?\n    cout << 5 * 6 / 3 - 2  << endl;  // = ?\n    cout << (2 + 3) * 4    << endl;  // = ?\n    cout << 10 / 2 + 8 / 4 << endl;  // = ?\n\n    // Now compute: is 5 > 3 && 10 < 20 true or false?\n    cout << (5 > 3 && 10 < 20) << endl;  // 1=true 0=false\n    cout << (5 > 3 || 10 > 20) << endl;  // ?\n    cout << !(5 > 3)           << endl;  // ?\n    return 0;\n}`
+      },
+      {
+        num:8, diff:"hard",
+        problem:"Fibonacci sequence: Print the first N Fibonacci numbers.\nThe sequence: 0, 1, 1, 2, 3, 5, 8, 13, 21...\nEach number = sum of previous two.",
+        example:"Input: 10\nOutput: 0 1 1 2 3 5 8 13 21 34",
+        hint:"Start: a=0, b=1. Each step: print a, then next=a+b, a=b, b=next. Repeat N times.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << "How many Fibonacci numbers? ";\n    cin >> n;\n\n    int a = 0, b = 1, next;\n\n    for(int i = 0; i < n; i++) {\n        cout << a << " ";\n        next = a + b;\n        a = ___;\n        b = ___;\n    }\n    return 0;\n}`
+      }
     ]
   },
   {
-    title: "Strings, Vectors & Arrays", color: COLORS[5], icon: "📋",
-    lectures: [
-      "Library string type in C++",
-      "Library vector type in C++",
-      "Introducing iterators in C++",
-      "Arrays in C++",
-      "Pointers and arrays in C++"
-    ],
-    questions: [
-      { q: "What is the difference between a C-style char array and a std::string? Write a program using std::string to store and print your full name.", hint: "<b>Hint:</b> std::string is safer, resizable, and has helpful methods like .length(), .substr()." },
-      { q: "Write a program that reads a sentence from the user (with spaces using getline) and prints the number of characters in it.", hint: "<b>Hint:</b> Use getline(cin, str) for strings with spaces. Use str.length() or str.size()." },
-      { q: "What is a vector? How is it different from an array? Write a program that stores 5 numbers in a vector and prints them all.", hint: "<b>Hint:</b> vector<int> v; v.push_back(10); A vector can grow dynamically unlike a fixed array." },
-      { q: "Write a program that creates an array of 5 test scores, calculates the average, and prints the highest and lowest score.", hint: "<b>Hint:</b> Loop through the array. Keep track of max and min with if comparisons." },
-      { q: "What happens if you access array[10] when the array only has 5 elements? What is this bug called?", hint: "<b>Hint:</b> It's called 'out of bounds access' — undefined behavior. Can crash or corrupt data." },
-      { q: "Write a program that reverses a vector of integers without using any built-in reverse function (do it manually with a loop).", hint: "<b>Hint:</b> Swap elements: v[0] with v[n-1], v[1] with v[n-2], loop till middle." },
-      { q: "What is an iterator? Write a program using iterators (begin() and end()) to print all elements of a vector.", hint: "<b>Hint:</b> for(auto it = v.begin(); it != v.end(); it++) { cout << *it; } — the * dereferences." },
-      { q: "Write a program that takes a string and counts how many vowels (a,e,i,o,u) are in it using a for loop.", hint: "<b>Hint:</b> Loop through each character. Use if(c=='a' || c=='e' || ...) to check vowels." }
+    title:"Strings, Vectors & Arrays", icon:"📋", color:"#8b5cf6",
+    lectures:["Library string type in C++","Library vector type in C++","Introducing iterators in C++","Arrays in C++","Pointers and arrays in C++"],
+    exercises:[
+      {
+        num:1, diff:"easy",
+        problem:"String basics: Read a full name. Print it in UPPERCASE, count its length, and check if it contains the letter 'a'.",
+        example:"Input: Sai Teja\nLength = 8\nContains 'a': Yes",
+        hint:"<b>str.length()</b> for size. Loop through each char and compare with 'a' or 'A'.",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string name;\n    cout << "Enter your full name: ";\n    getline(cin, name);\n\n    cout << "Length = " << ___.length() << endl;\n\n    bool hasA = false;\n    for(int i = 0; i < name.length(); i++) {\n        if(name[i] == 'a' || name[i] == 'A') hasA = true;\n    }\n    cout << "Contains 'a': " << (hasA ? "Yes" : "No") << endl;\n    return 0;\n}`
+      },
+      {
+        num:2, diff:"easy",
+        problem:"Array basics: Store 5 test scores in an array. Calculate and print the average score.",
+        example:"Scores: 80 75 90 65 88\nAverage = 79.6",
+        hint:"Sum all elements in a loop. Average = sum / 5.0 (use 5.0 not 5 for float division).",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int scores[5];\n    cout << "Enter 5 scores: ";\n    for(int i = 0; i < 5; i++)\n        cin >> scores[i];\n\n    int sum = 0;\n    for(int i = 0; i < 5; i++)\n        sum += ___;\n\n    cout << "Average = " << sum / 5.0 << endl;\n    return 0;\n}`
+      },
+      {
+        num:3, diff:"easy",
+        problem:"Vector basics: Add 5 numbers to a vector using push_back(). Then print all using a for loop. Then remove the last with pop_back().",
+        example:"Vector: 10 20 30 40 50\nAfter pop_back: 10 20 30 40\nSize = 4",
+        hint:"<b>vector&lt;int&gt; v;</b> then <b>v.push_back(x);</b> to add. <b>v.pop_back();</b> removes last.",
+        code:`#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> v;\n    v.push_back(10);\n    v.push_back(20);\n    v.___(30);\n    v.___(40);\n    v.___(50);\n\n    cout << "Vector: ";\n    for(int i = 0; i < v.size(); i++)\n        cout << v[i] << " ";\n    cout << endl;\n\n    v.pop_back();\n    cout << "After pop_back: ";\n    for(int x : v) cout << x << " ";\n    cout << "\\nSize = " << v.size() << endl;\n    return 0;\n}`
+      },
+      {
+        num:4, diff:"medium",
+        problem:"Find the MAXIMUM and MINIMUM values in an array of 8 numbers entered by the user.",
+        example:"Input: 34 12 67 8 90 45 23 56\nMax = 90\nMin = 8",
+        hint:"Set max=arr[0], min=arr[0]. Loop from index 1. If arr[i]>max, update max. If arr[i]<min, update min.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int arr[8];\n    cout << "Enter 8 numbers: ";\n    for(int i = 0; i < 8; i++) cin >> arr[i];\n\n    int maxVal = arr[0];\n    int minVal = arr[0];\n\n    for(int i = 1; i < 8; i++) {\n        if(arr[i] > maxVal) maxVal = ___;\n        if(arr[i] < minVal) minVal = ___;\n    }\n\n    cout << "Max = " << maxVal << endl;\n    cout << "Min = " << minVal << endl;\n    return 0;\n}`
+      },
+      {
+        num:5, diff:"medium",
+        problem:"Count vowels and consonants in a string entered by the user.",
+        example:"Input: Hello World\nVowels = 3\nConsonants = 7",
+        hint:"Loop through each char. Check if it's a-z or A-Z (use isalpha). Then check if it's aeiouAEIOU.",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string s;\n    cout << "Enter a string: ";\n    getline(cin, s);\n\n    int vowels = 0, consonants = 0;\n    string v = "aeiouAEIOU";\n\n    for(char c : s) {\n        if(isalpha(c)) {\n            bool isVowel = false;\n            for(char vow : v)\n                if(c == vow) isVowel = true;\n\n            if(isVowel) ___++;\n            else        ___++;\n        }\n    }\n\n    cout << "Vowels = " << vowels << endl;\n    cout << "Consonants = " << consonants << endl;\n    return 0;\n}`
+      },
+      {
+        num:6, diff:"medium",
+        problem:"Reverse an array in-place without using any reverse function. Swap first with last, second with second-last, etc.",
+        example:"Original: 1 2 3 4 5\nReversed: 5 4 3 2 1",
+        hint:"Use two index variables: left=0, right=n-1. Swap arr[left] with arr[right]. Move both inward.",
+        code:`#include <iostream>\nusing namespace std;\n\nint main() {\n    int arr[] = {1, 2, 3, 4, 5};\n    int n = 5;\n\n    cout << "Original: ";\n    for(int x : arr) cout << x << " ";\n    cout << endl;\n\n    // Reverse in-place\n    int left = 0, right = n - 1;\n    while(left < right) {\n        int temp  = arr[left];\n        arr[left] = arr[right];\n        arr[right]= temp;\n        ___++;\n        ___--;\n    }\n\n    cout << "Reversed: ";\n    for(int x : arr) cout << x << " ";\n    return 0;\n}`
+      },
+      {
+        num:7, diff:"hard",
+        problem:"Word counter: Read a sentence and count the number of words in it.",
+        example:"Input: C++ is really fun to learn\nWord count = 6",
+        hint:"Count spaces + 1 = word count (for non-empty strings). Or use a bool flag tracking if you're inside a word.",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string sentence;\n    cout << "Enter a sentence: ";\n    getline(cin, sentence);\n\n    int words = 0;\n    bool inWord = false;\n\n    for(char c : sentence) {\n        if(c != ' ' && !inWord) {\n            words++;\n            inWord = true;\n        } else if(c == ' ') {\n            inWord = ___;\n        }\n    }\n\n    cout << "Word count = " << words << endl;\n    return 0;\n}`
+      },
+      {
+        num:8, diff:"hard",
+        problem:"Linear search: Store 10 numbers in a vector. Ask the user to search for a number. Print if found (and at which index) or not found.",
+        example:"Vector: 5 8 3 12 7 19 4 11 6 2\nSearch for: 12\nFound at index 3!",
+        hint:"Loop through vector. If v[i] == target, print the index and set found=true. Break early.",
+        code:`#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> v = {5, 8, 3, 12, 7, 19, 4, 11, 6, 2};\n\n    cout << "Vector: ";\n    for(int x : v) cout << x << " ";\n    cout << endl;\n\n    int target;\n    cout << "Search for: ";\n    cin >> target;\n\n    bool found = false;\n    for(int i = 0; i < v.size(); i++) {\n        if(v[i] == ___) {\n            cout << "Found at index " << i << "!" << endl;\n            found = true;\n            break;\n        }\n    }\n    if(!found) cout << "Not found." << endl;\n    return 0;\n}`
+      }
     ]
   },
   {
-    title: "Functions", color: COLORS[6], icon: "🔧",
-    lectures: [
-      "Introduction to functions in C++",
-      "Function argument passing in C++",
-      "Return types and the return statement",
-      "Overloaded functions in C++",
-      "Default arguments in C++"
-    ],
-    questions: [
-      { q: "Write a function called 'greet' that takes a name as a string and prints 'Hello, [name]! Welcome to C++.' Call it from main.", hint: "<b>Hint:</b> void greet(string name) { cout << ... } — void means it returns nothing." },
-      { q: "What is the difference between pass by value and pass by reference? Write a function 'double' that doubles a number, once each way.", hint: "<b>Hint:</b> Pass by value: original unchanged. Pass by reference (int& n): original IS changed." },
-      { q: "Write a function that takes two integers and returns the larger one. Then write a second version for two doubles. Demonstrate both.", hint: "<b>Hint:</b> int maxOf(int a, int b) { return (a > b) ? a : b; } Return type must match what you return." },
-      { q: "What is function overloading? Write an 'area' function that is overloaded for a circle (radius) and a rectangle (width, height).", hint: "<b>Hint:</b> Same name, different parameters. C++ picks the right one based on argument types." },
-      { q: "What are default arguments? Write a 'power' function where the exponent defaults to 2 if not provided.", hint: "<b>Hint:</b> int power(int base, int exp = 2). Calling power(5) returns 25, power(5,3) returns 125." },
-      { q: "What is recursion? Write a recursive function to calculate factorial of a number (n! = n * (n-1) * ... * 1).", hint: "<b>Hint:</b> Base case: if(n==0) return 1. Recursive: return n * factorial(n-1)." },
-      { q: "What is the call stack? Draw (or describe) what happens to the stack when factorial(4) calls factorial(3) calls factorial(2)...", hint: "<b>Hint:</b> Each call adds a new frame on the stack. They unwind when base case is reached." },
-      { q: "Write a function 'isPrime' that returns true if a number is prime, false otherwise. Use it to print all primes from 1 to 50.", hint: "<b>Hint:</b> Check divisibility from 2 to sqrt(n). If nothing divides evenly, it's prime." }
+    title:"Functions", icon:"🔧", color:"#06b6d4",
+    lectures:["Introduction to functions in C++","Function argument passing in C++","Return types and the return statement","Overloaded functions in C++","Default arguments in C++"],
+    exercises:[
+      {
+        num:1, diff:"easy",
+        problem:"Write a function 'isEven(int n)' that returns true if n is even.\nUse it to print even numbers from 1 to 20.",
+        example:"2 4 6 8 10 12 14 16 18 20",
+        hint:"Function returns bool. Return n%2 == 0. Call it inside an if in the loop.",
+        code:`#include <iostream>\nusing namespace std;\n\nbool isEven(int n) {\n    return ___ % 2 == 0;\n}\n\nint main() {\n    for(int i = 1; i <= 20; i++) {\n        if(isEven(___)) cout << i << " ";\n    }\n    return 0;\n}`
+      },
+      {
+        num:2, diff:"easy",
+        problem:"Write a function 'power(int base, int exp)' that calculates base^exp WITHOUT using the pow() library function.",
+        example:"power(2, 8) = 256\npower(3, 4) = 81",
+        hint:"Use a loop: result=1, multiply result by base, exp times. for(i=0; i<exp; i++) result *= base.",
+        code:`#include <iostream>\nusing namespace std;\n\nint power(int base, int exp) {\n    int result = 1;\n    for(int i = 0; i < ___; i++) {\n        result *= ___;\n    }\n    return result;\n}\n\nint main() {\n    cout << "2^8 = " << power(2, 8) << endl;\n    cout << "3^4 = " << power(___, ___) << endl;\n    cout << "5^3 = " << power(___, ___) << endl;\n    return 0;\n}`
+      },
+      {
+        num:3, diff:"medium",
+        problem:"Pass by reference: Write a function 'swap(int& a, int& b)' that swaps two numbers.\nShow that the original variables in main are actually changed.",
+        example:"Before: a=10 b=20\nAfter swap: a=20 b=10",
+        hint:"Use <b>int& a</b> parameters. Inside: use a temp variable. The & means changes affect the caller.",
+        code:`#include <iostream>\nusing namespace std;\n\nvoid swapNums(int& a, int& b) {\n    int temp = a;\n    a = ___;\n    b = ___;\n}\n\nint main() {\n    int x = 10, y = 20;\n    cout << "Before: x=" << x << " y=" << y << endl;\n\n    swapNums(___, ___);\n\n    cout << "After swap: x=" << x << " y=" << y << endl;\n    return 0;\n}`
+      },
+      {
+        num:4, diff:"medium",
+        problem:"Function overloading: Write 3 overloaded functions called 'area' — one for square (side), one for rectangle (l,w), one for circle (r).",
+        example:"area(5) = 25 (square)\narea(4, 6) = 24 (rectangle)\narea(7.0f) = 153.938 (circle)",
+        hint:"Same function name, different parameters. C++ picks the right one automatically based on arguments.",
+        code:`#include <iostream>\nusing namespace std;\n\nint area(int side) {\n    return ___ * ___;\n}\n\nint area(int l, int w) {\n    return ___ * ___;\n}\n\nfloat area(float r) {\n    return 3.14159 * r * r;\n}\n\nint main() {\n    cout << "Square area(5) = " << area(5) << endl;\n    cout << "Rect area(4,6) = " << area(4, 6) << endl;\n    cout << "Circle area(7) = " << area(7.0f) << endl;\n    return 0;\n}`
+      },
+      {
+        num:5, diff:"medium",
+        problem:"Factorial using recursion: Write a recursive function factorial(n).\nBase case: factorial(0) = 1\nRecursive: n * factorial(n-1)",
+        example:"factorial(5) = 120\nfactorial(10) = 3628800",
+        hint:"Every recursive function needs a BASE CASE to stop. Without it = infinite loop and crash!",
+        code:`#include <iostream>\nusing namespace std;\n\nlong long factorial(int n) {\n    if(n == 0) return ___; // base case\n    return ___ * factorial(n - 1); // recursive case\n}\n\nint main() {\n    for(int i = 0; i <= 10; i++) {\n        cout << i << "! = " << factorial(i) << endl;\n    }\n    return 0;\n}`
+      },
+      {
+        num:6, diff:"medium",
+        problem:"Default arguments: Write a function 'greet(name, greeting=\"Hello\")' where the greeting defaults to 'Hello' if not provided.",
+        example:"greet(\"Sai\") → Hello, Sai!\ngreet(\"Sai\", \"Namaste\") → Namaste, Sai!",
+        hint:"Default arguments go in the function DECLARATION. <b>void greet(string name, string g = \"Hello\")</b>",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nvoid greet(string name, string greeting = ___) {\n    cout << greeting << ", " << name << "!" << endl;\n}\n\nint main() {\n    greet("Sai");               // uses default\n    greet("Teja", "Namaste");   // custom greeting\n    greet("World", "Hey");      // custom greeting\n    return 0;\n}`
+      },
+      {
+        num:7, diff:"hard",
+        problem:"GCD using Euclidean algorithm (recursive):\nGCD(a, b) = GCD(b, a%b) until b becomes 0.\nAlso compute LCM = (a*b) / GCD(a,b)",
+        example:"GCD(48, 18) = 6\nLCM(48, 18) = 144",
+        hint:"Base case: if b==0, return a. Recursive: return gcd(b, a%b). LCM = a/gcd(a,b) * b (avoids overflow).",
+        code:`#include <iostream>\nusing namespace std;\n\nint gcd(int a, int b) {\n    if(b == 0) return ___;\n    return gcd(___, ___);\n}\n\nint lcm(int a, int b) {\n    return a / gcd(a, b) * b;\n}\n\nint main() {\n    int a, b;\n    cout << "Enter two numbers: ";\n    cin >> a >> b;\n\n    cout << "GCD(" << a << ", " << b << ") = " << gcd(a, b) << endl;\n    cout << "LCM(" << a << ", " << b << ") = " << lcm(a, b) << endl;\n    return 0;\n}`
+      },
+      {
+        num:8, diff:"hard",
+        problem:"Number pattern function: Write a function that takes n and prints the number pattern:\n1\n1 2\n1 2 3 ... up to n rows",
+        example:"Input: 5\n1\n1 2\n1 2 3\n1 2 3 4\n1 2 3 4 5",
+        hint:"The function uses nested loops. Outer loop = row (1 to n). Inner loop = print 1 to row number.",
+        code:`#include <iostream>\nusing namespace std;\n\nvoid numberPattern(int n) {\n    for(int row = 1; row <= n; row++) {\n        for(int col = 1; col <= ___; col++) {\n            cout << col << " ";\n        }\n        cout << endl;\n    }\n}\n\nint main() {\n    int n;\n    cout << "Enter n: ";\n    cin >> n;\n    numberPattern(___);\n    return 0;\n}`
+      }
     ]
   },
   {
-    title: "Classes & OOP", color: COLORS[7], icon: "🏗️",
-    lectures: [
-      "Introduction to classes in C++",
-      "Defining member functions",
-      "Constructors in C++",
-      "Access control and encapsulation",
-      "Class scope and members",
-      "The 'this' pointer in C++"
-    ],
-    questions: [
-      { q: "What is a class? Create a 'Student' class with name and age as attributes. Create an object of it and print the details.", hint: "<b>Hint:</b> class Student { public: string name; int age; }; Student s; s.name = 'Sai';." },
-      { q: "What is the difference between public and private members? Rewrite your Student class with private attributes and public getter functions.", hint: "<b>Hint:</b> Private = only accessible inside the class. Public = accessible from anywhere." },
-      { q: "What is a constructor and why is it useful? Add a constructor to your Student class that sets name and age when the object is created.", hint: "<b>Hint:</b> Student(string n, int a) { name = n; age = a; } Called automatically at object creation." },
-      { q: "What is encapsulation? Write a 'BankAccount' class with private balance, and public deposit/withdraw/getBalance methods.", hint: "<b>Hint:</b> Hide the data, expose operations. The balance can only change through deposit/withdraw." },
-      { q: "What is the 'this' pointer? Write a constructor where the parameter names are the same as member names and use 'this->' to distinguish.", hint: "<b>Hint:</b> this->name = name; — 'this' points to the current object being constructed." },
-      { q: "What is a default constructor? What happens if you don't write any constructor at all in your class?", hint: "<b>Hint:</b> C++ auto-generates a default constructor if you don't write one. It does nothing special." },
-      { q: "Write a 'Rectangle' class with width and height, a constructor, and methods: area(), perimeter(), and isSquare().", hint: "<b>Hint:</b> isSquare() returns true if width == height. Good practice for combining data + behavior." },
-      { q: "What is the difference between a struct and a class in C++? Write the same simple program using both and note the one key difference.", hint: "<b>Hint:</b> In struct, members are public by default. In class, they're private by default." }
+    title:"Classes & OOP", icon:"🏗️", color:"#f97316",
+    lectures:["Introduction to classes in C++","Defining member functions","Constructors in C++","Access control and encapsulation","Class scope and members","The 'this' pointer in C++"],
+    exercises:[
+      {
+        num:1, diff:"easy",
+        problem:"Create a 'Student' class with public attributes: name (string), age (int), marks (float). Create 2 student objects and print their details.",
+        example:"Student 1: Sai, Age 20, Marks: 87.5\nStudent 2: Teja, Age 21, Marks: 92.0",
+        hint:"class Student { public: string name; int age; float marks; };  Then: Student s1; s1.name = \"Sai\";",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Student {\npublic:\n    string name;\n    int age;\n    float marks;\n};\n\nint main() {\n    Student s1;\n    s1.name = "Sai";\n    s1.___ = 20;\n    s1.___ = 87.5;\n\n    Student s2;\n    s2.name = "Teja";\n    s2.age = 21;\n    s2.marks = 92.0;\n\n    cout << "Student 1: " << s1.name << ", Age " << s1.age << ", Marks: " << s1.marks << endl;\n    cout << "Student 2: " << ___ << ", Age " << ___ << ", Marks: " << ___ << endl;\n    return 0;\n}`
+      },
+      {
+        num:2, diff:"easy",
+        problem:"Add a constructor to the Student class that sets name, age, and marks when the object is created.",
+        example:"Student s(\"Sai\", 20, 87.5);\nOutputs: Sai, Age 20, Marks 87.5",
+        hint:"Constructor has the SAME NAME as the class and NO return type. Student(string n, int a, float m) { ... }",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Student {\npublic:\n    string name;\n    int age;\n    float marks;\n\n    // Constructor\n    Student(string n, int a, float m) {\n        name  = ___;\n        age   = ___;\n        marks = ___;\n    }\n\n    void display() {\n        cout << name << ", Age " << age << ", Marks " << marks << endl;\n    }\n};\n\nint main() {\n    Student s1("Sai", 20, 87.5);\n    Student s2("Teja", 21, 92.0);\n\n    s1.___();\n    s2.___();\n    return 0;\n}`
+      },
+      {
+        num:3, diff:"medium",
+        problem:"Encapsulation: Create a 'BankAccount' class with PRIVATE balance. Add public methods: deposit(), withdraw(), and getBalance().",
+        example:"Deposit 500 → Balance: 500\nWithdraw 200 → Balance: 300\nWithdraw 500 → Insufficient funds!",
+        hint:"Private means balance can ONLY be changed through deposit/withdraw. This protects data from accidental changes.",
+        code:`#include <iostream>\nusing namespace std;\n\nclass BankAccount {\nprivate:\n    float balance;\n\npublic:\n    BankAccount() { balance = 0; }\n\n    void deposit(float amount) {\n        balance += ___;\n        cout << "Deposited. Balance: " << balance << endl;\n    }\n\n    void withdraw(float amount) {\n        if(amount > balance)\n            cout << "Insufficient funds!" << endl;\n        else {\n            balance -= ___;\n            cout << "Withdrawn. Balance: " << balance << endl;\n        }\n    }\n\n    float getBalance() { return ___; }\n};\n\nint main() {\n    BankAccount acc;\n    acc.deposit(500);\n    acc.withdraw(200);\n    acc.withdraw(500);\n    return 0;\n}`
+      },
+      {
+        num:4, diff:"medium",
+        problem:"Create a 'Rectangle' class with width and height. Add methods: area(), perimeter(), and isSquare() (returns true if w == h).",
+        example:"Rectangle(4, 6)\nArea = 24\nPerimeter = 20\nIs Square: No\n\nRectangle(5, 5)\nIs Square: Yes",
+        hint:"isSquare() returns bool: return width == height;",
+        code:`#include <iostream>\nusing namespace std;\n\nclass Rectangle {\npublic:\n    float width, height;\n\n    Rectangle(float w, float h) {\n        width = w; height = h;\n    }\n\n    float area() { return ___ * ___; }\n\n    float perimeter() { return 2 * (___ + ___); }\n\n    bool isSquare() { return ___ == ___; }\n};\n\nint main() {\n    Rectangle r1(4, 6);\n    cout << "Area = " << r1.area() << endl;\n    cout << "Perimeter = " << r1.perimeter() << endl;\n    cout << "Is Square: " << (r1.isSquare() ? "Yes" : "No") << endl;\n\n    Rectangle r2(5, 5);\n    cout << "Is Square: " << (r2.isSquare() ? "Yes" : "No") << endl;\n    return 0;\n}`
+      },
+      {
+        num:5, diff:"medium",
+        problem:"The 'this' pointer: Write a constructor where parameter names match member names. Use 'this->' to resolve the ambiguity.",
+        example:"Shows how this->name differs from the parameter name",
+        hint:"Without this->, both sides of name=name refer to the parameter. this->name refers to the member.",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Person {\npublic:\n    string name;\n    int age;\n\n    // Parameter names SAME as member names — use this->\n    Person(string name, int age) {\n        this->___ = name;\n        this->___ = age;\n    }\n\n    void show() {\n        cout << "Name: " << name << ", Age: " << age << endl;\n    }\n};\n\nint main() {\n    Person p("Sai Teja", 20);\n    p.show();\n    return 0;\n}`
+      },
+      {
+        num:6, diff:"hard",
+        problem:"Create a 'Counter' class with a private count variable.\nMethods: increment(), decrement(), reset(), getCount().\nAlso a constructor with optional starting value.",
+        example:"Counter c(10);\nc.increment(); // 11\nc.increment(); // 12\nc.decrement(); // 11\nc.reset();     // 0",
+        hint:"Default argument in constructor: Counter(int start = 0) { count = start; }",
+        code:`#include <iostream>\nusing namespace std;\n\nclass Counter {\nprivate:\n    int count;\npublic:\n    Counter(int start = 0) { count = ___; }\n\n    void increment() { ___++; }\n    void decrement() { ___--; }\n    void reset()     { ___ = 0; }\n    int getCount()   { return ___; }\n};\n\nint main() {\n    Counter c(10);\n    cout << c.getCount() << endl; // 10\n    c.increment();\n    c.increment();\n    cout << c.getCount() << endl; // 12\n    c.decrement();\n    cout << c.getCount() << endl; // 11\n    c.reset();\n    cout << c.getCount() << endl; // 0\n    return 0;\n}`
+      },
+      {
+        num:7, diff:"hard",
+        problem:"Calculator class: Create a Calculator class that keeps track of the current result.\nMethods: add(), subtract(), multiply(), divide(), getResult(), reset().",
+        example:"calc.add(10)      → 10\ncalc.multiply(3)  → 30\ncalc.subtract(5)  → 25\ncalc.divide(5)    → 5",
+        hint:"The result is stored in the object. Each method modifies result and returns *this to allow chaining.",
+        code:`#include <iostream>\nusing namespace std;\n\nclass Calculator {\nprivate:\n    float result;\npublic:\n    Calculator() { result = 0; }\n\n    void add(float n)      { result += n; }\n    void subtract(float n) { result -= n; }\n    void multiply(float n) { result *= n; }\n    void divide(float n) {\n        if(n != 0) result /= n;\n        else cout << "Error: divide by zero!" << endl;\n    }\n    float getResult() { return result; }\n    void reset() { result = 0; }\n};\n\nint main() {\n    Calculator calc;\n    calc.add(10);\n    cout << calc.getResult() << endl;\n    calc.multiply(3);\n    cout << calc.getResult() << endl;\n    calc.subtract(5);\n    cout << ___.getResult() << endl;\n    calc.divide(5);\n    cout << ___.getResult() << endl;\n    return 0;\n}`
+      },
+      {
+        num:8, diff:"hard",
+        problem:"Static member: Add a static variable 'count' to the Student class that tracks how many Student objects have been created.",
+        example:"Created s1 → Students created: 1\nCreated s2 → Students created: 2\nCreated s3 → Students created: 3",
+        hint:"<b>static int count;</b> inside class. Increment it in the constructor. Access with <b>Student::count</b>.",
+        code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Student {\npublic:\n    string name;\n    static int count; // shared by ALL objects\n\n    Student(string n) {\n        name = n;\n        ___++;  // increment static counter\n        cout << "Created " << name << " → Students: " << ___ << endl;\n    }\n};\n\nint Student::count = 0; // initialize outside class\n\nint main() {\n    Student s1("Sai");\n    Student s2("Teja");\n    Student s3("Ravi");\n    cout << "Total students: " << Student::count << endl;\n    return 0;\n}`
+      }
     ]
   },
   {
-    title: "Operator Overloading", color: COLORS[8], icon: "🔄",
-    lectures: [
-      "Introduction to operator overloading",
-      "Overloading arithmetic operators",
-      "Overloading relational operators",
-      "Overloading input/output operators",
-      "Overloading increment/decrement operators"
-    ],
-    questions: [
-      { q: "What is operator overloading and why is it useful? Give a real-world example where overloading + makes code more readable.", hint: "<b>Hint:</b> A Vector2D class: v1 + v2 is cleaner than v1.add(v2). It's about natural syntax." },
-      { q: "Write a 'Fraction' class (numerator, denominator) and overload the + operator to add two fractions correctly.", hint: "<b>Hint:</b> a/b + c/d = (a*d + b*c)/(b*d). Fraction operator+(Fraction other) { ... }" },
-      { q: "Overload the == and != operators for your Fraction class. Test with fractions 1/2 and 2/4 (they should be equal after simplification).", hint: "<b>Hint:</b> Cross multiply to compare: a/b == c/d when a*d == b*c." },
-      { q: "Overload << for your Fraction class so that cout << myFraction prints it as '3/4' instead of garbage.", hint: "<b>Hint:</b> friend ostream& operator<<(ostream& os, Fraction f) { os << f.num << '/' << f.den; return os; }" },
-      { q: "What is the difference between prefix ++ (++x) and postfix ++ (x++) when overloading? How does C++ tell them apart?", hint: "<b>Hint:</b> Postfix version takes a dummy int parameter: operator++(int). Prefix takes none." },
-      { q: "Overload the * operator for a 'Vector2D' class (x, y) so that v * 3 scales the vector by 3.", hint: "<b>Hint:</b> Vector2D operator*(int scalar) { return Vector2D(x*scalar, y*scalar); }" },
-      { q: "Can you overload every operator in C++? List 3 operators that CANNOT be overloaded and explain why.", hint: "<b>Hint:</b> :: (scope), . (member access), ?: (ternary), sizeof cannot be overloaded." },
-      { q: "Write a 'Matrix2x2' class and overload + to add two 2x2 matrices element by element. Test it with two sample matrices.", hint: "<b>Hint:</b> Store as int data[2][2]. Add corresponding elements: result[i][j] = a[i][j] + b[i][j]." }
+    title:"Operator Overloading", icon:"🔄", color:"#84cc16",
+    lectures:["Introduction to operator overloading","Overloading arithmetic operators","Overloading relational operators","Overloading input/output operators","Overloading increment/decrement operators"],
+    exercises:[
+      {num:1,diff:"easy",problem:"Create a 'Vector2D' class (x, y). Overload the + operator to add two vectors.",example:"v1(3,4) + v2(1,2) = Vector(4,6)",hint:"operator+ takes another Vector2D as argument. Return a new Vector2D(x+other.x, y+other.y).",code:`#include <iostream>\nusing namespace std;\n\nclass Vector2D {\npublic:\n    float x, y;\n    Vector2D(float x=0, float y=0) : x(x), y(y) {}\n\n    Vector2D operator+(Vector2D other) {\n        return Vector2D(___ + other.x, ___ + other.y);\n    }\n\n    void print() { cout << "(" << x << ", " << y << ")" << endl; }\n};\n\nint main() {\n    Vector2D v1(3, 4), v2(1, 2);\n    Vector2D v3 = v1 + v2;\n    cout << "v1 + v2 = "; v3.print();\n    return 0;\n}`},
+      {num:2,diff:"easy",problem:"Overload the == operator for Vector2D to check if two vectors are equal.",example:"(3,4) == (3,4) → Equal!\n(3,4) == (1,2) → Not equal.",hint:"bool operator==(Vector2D other) { return x==other.x && y==other.y; }",code:`#include <iostream>\nusing namespace std;\n\nclass Vector2D {\npublic:\n    float x, y;\n    Vector2D(float x, float y) : x(x), y(y) {}\n\n    bool operator==(Vector2D other) {\n        return ___ == other.x && ___ == other.y;\n    }\n};\n\nint main() {\n    Vector2D v1(3, 4), v2(3, 4), v3(1, 2);\n    cout << (v1 == v2 ? "Equal!" : "Not equal.") << endl;\n    cout << (v1 == v3 ? "Equal!" : "Not equal.") << endl;\n    return 0;\n}`},
+      {num:3,diff:"medium",problem:"Create a 'Fraction' class. Overload + to correctly add two fractions.\na/b + c/d = (a*d + b*c) / (b*d)",example:"1/2 + 1/3 = 5/6",hint:"Fraction operator+(Fraction f) { return Fraction(num*f.den + f.num*den, den*f.den); }",code:`#include <iostream>\nusing namespace std;\n\nclass Fraction {\npublic:\n    int num, den;\n    Fraction(int n, int d) : num(n), den(d) {}\n\n    Fraction operator+(Fraction f) {\n        int n = ___ * f.den + f.num * ___;\n        int d = ___ * f.den;\n        return Fraction(n, d);\n    }\n\n    void print() { cout << num << "/" << den << endl; }\n};\n\nint main() {\n    Fraction f1(1,2), f2(1,3);\n    Fraction f3 = f1 + f2;\n    cout << "1/2 + 1/3 = "; f3.print();\n    return 0;\n}`},
+      {num:4,diff:"medium",problem:"Overload << for the Fraction class so you can use cout << myFraction directly.",example:"cout << f1 prints: 1/2",hint:"friend ostream& operator<<(ostream& os, Fraction f) { os << f.num << \"/\" << f.den; return os; }",code:`#include <iostream>\nusing namespace std;\n\nclass Fraction {\npublic:\n    int num, den;\n    Fraction(int n, int d) : num(n), den(d) {}\n\n    friend ostream& operator<<(ostream& os, Fraction f) {\n        os << ___ << "/" << ___;\n        return os;\n    }\n};\n\nint main() {\n    Fraction f1(3, 4), f2(1, 2);\n    cout << "f1 = " << f1 << endl;\n    cout << "f2 = " << f2 << endl;\n    return 0;\n}`},
+      {num:5,diff:"medium",problem:"Overload prefix ++ and postfix ++ for a 'Score' class that holds an integer score.",example:"Score s(5);\n++s → 6\ns++ → prints 6, becomes 7",hint:"Prefix: Score& operator++() { score++; return *this; }\nPostfix: Score operator++(int) { Score old=*this; score++; return old; }",code:`#include <iostream>\nusing namespace std;\n\nclass Score {\npublic:\n    int score;\n    Score(int s) : score(s) {}\n\n    Score& operator++() {     // prefix ++\n        ___++;\n        return *this;\n    }\n\n    Score operator++(int) {   // postfix ++ (note: int param)\n        Score old = *this;\n        ___++;\n        return old;\n    }\n};\n\nint main() {\n    Score s(5);\n    cout << (++s).score << endl;  // 6\n    cout << (s++).score << endl;  // 6 (old value)\n    cout << s.score << endl;      // 7\n    return 0;\n}`},
+      {num:6,diff:"medium",problem:"Overload the * operator for Vector2D to multiply by a scalar.\nv * 3 should scale both x and y by 3.",example:"v(2, 3) * 4 = (8, 12)",hint:"Vector2D operator*(float scalar) { return Vector2D(x*scalar, y*scalar); }",code:`#include <iostream>\nusing namespace std;\n\nclass Vector2D {\npublic:\n    float x, y;\n    Vector2D(float x, float y) : x(x), y(y) {}\n\n    Vector2D operator*(float scalar) {\n        return Vector2D(___ * scalar, ___ * scalar);\n    }\n\n    void print() { cout << "(" << x << ", " << y << ")"; }\n};\n\nint main() {\n    Vector2D v(2, 3);\n    cout << "v * 4 = "; (v * 4).print(); cout << endl;\n    cout << "v * 0.5 = "; (v * 0.5f).print(); cout << endl;\n    return 0;\n}`},
+      {num:7,diff:"hard",problem:"Overload - and * operators for the Fraction class.\nSubtraction: a/b - c/d = (a*d - b*c) / (b*d)\nMultiplication: a/b * c/d = (a*c) / (b*d)",example:"3/4 - 1/4 = 8/16 (= 1/2)\n2/3 * 3/4 = 6/12 (= 1/2)",hint:"Same pattern as addition but with different math. Don't worry about simplifying fractions yet.",code:`#include <iostream>\nusing namespace std;\n\nclass Fraction {\npublic:\n    int num, den;\n    Fraction(int n, int d) : num(n), den(d) {}\n\n    Fraction operator-(Fraction f) {\n        return Fraction(num*f.den - ___ * den, den * f.den);\n    }\n\n    Fraction operator*(Fraction f) {\n        return Fraction(num * ___, den * ___);\n    }\n\n    void print() { cout << num << "/" << den << endl; }\n};\n\nint main() {\n    Fraction f1(3,4), f2(1,4);\n    cout << "3/4 - 1/4 = "; (f1 - f2).print();\n    Fraction f3(2,3), f4(3,4);\n    cout << "2/3 * 3/4 = "; (f3 * f4).print();\n    return 0;\n}`},
+      {num:8,diff:"hard",problem:"Overload the [] subscript operator for a safe array wrapper class that checks bounds and prints an error instead of crashing.",example:"arr[2] = 30  (valid)\narr[10] = ??? (out of bounds! prints error)",hint:"int& operator[](int i) { if(i<0||i>=size) { error; return dummy; } return data[i]; }",code:`#include <iostream>\nusing namespace std;\n\nclass SafeArray {\n    int data[5];\n    int size = 5;\n    int dummy = -1;\npublic:\n    SafeArray() { for(int i=0;i<5;i++) data[i]=(i+1)*10; }\n\n    int& operator[](int i) {\n        if(i < 0 || i >= ___) {\n            cout << "Error: index " << i << " out of bounds!" << endl;\n            return dummy;\n        }\n        return data[___];\n    }\n};\n\nint main() {\n    SafeArray arr;\n    cout << arr[0] << endl;  // 10\n    cout << arr[2] << endl;  // 30\n    cout << arr[10] << endl; // error\n    return 0;\n}`}
     ]
   },
   {
-    title: "Inheritance & Polymorphism", color: COLORS[9], icon: "🌳",
-    lectures: [
-      "Introduction to inheritance in C++",
-      "Virtual functions and polymorphism",
-      "Abstract base classes in C++",
-      "Access control in inheritance",
-      "Constructors and copy control with inheritance"
-    ],
-    questions: [
-      { q: "What is inheritance? Create a 'Vehicle' base class and a 'Car' subclass that inherits from it. Add a method in each.", hint: "<b>Hint:</b> class Car : public Vehicle { ... }. Car gets all of Vehicle's public members automatically." },
-      { q: "What is the difference between public, protected, and private inheritance? Which one do you use 99% of the time and why?", hint: "<b>Hint:</b> public inheritance (is-a relationship) is the most common. protected/private are rare." },
-      { q: "What is a virtual function? Create a 'Shape' base class with virtual area(), and override it in Circle and Rectangle subclasses.", hint: "<b>Hint:</b> virtual double area() = 0; in base. Each child implements its own. Called via pointer." },
-      { q: "What is polymorphism? Write code using a Shape* pointer that calls area() on both a Circle and Rectangle object.", hint: "<b>Hint:</b> Shape* s = new Circle(5); s->area(); — the right version is called at runtime." },
-      { q: "What is an abstract class? Why can't you create an object of an abstract class directly?", hint: "<b>Hint:</b> A class with at least one pure virtual function (= 0) is abstract. It's a blueprint only." },
-      { q: "What is a virtual destructor and why is it important? Show the memory leak bug that happens without it.", hint: "<b>Hint:</b> Without virtual ~Base(), deleting a derived object through a base pointer won't call the right destructor." },
-      { q: "What is method overriding vs method overloading? Write a clear example showing the difference between the two.", hint: "<b>Hint:</b> Overloading = same name, different params, same class. Overriding = same name, different class (parent/child)." },
-      { q: "Write a complete mini-program: Animal base class with speak(), Dog and Cat subclasses overriding speak(). Store them in a vector<Animal*> and call speak() on each.", hint: "<b>Hint:</b> This is runtime polymorphism in action. The vector holds base pointers but calls correct child methods." }
+    title:"Inheritance & Polymorphism", icon:"🌳", color:"#ec4899",
+    lectures:["Introduction to inheritance in C++","Virtual functions and polymorphism","Abstract base classes in C++","Access control in inheritance","Constructors and copy control with inheritance"],
+    exercises:[
+      {num:1,diff:"easy",problem:"Create a 'Vehicle' base class with brand and speed. Create a 'Car' class that inherits from Vehicle and adds doors. Print all details.",example:"Car: Toyota, Speed: 180 km/h, Doors: 4",hint:"class Car : public Vehicle { ... }. Car gets brand and speed for free!",code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Vehicle {\npublic:\n    string brand;\n    int speed;\n    Vehicle(string b, int s) : brand(b), speed(s) {}\n    void show() {\n        cout << brand << ", Speed: " << speed << " km/h";\n    }\n};\n\nclass Car : public ___ {\npublic:\n    int doors;\n    Car(string b, int s, int d) : Vehicle(b, s), doors(d) {}\n    void showCar() {\n        show();\n        cout << ", Doors: " << ___ << endl;\n    }\n};\n\nint main() {\n    Car c("Toyota", 180, 4);\n    c.showCar();\n    return 0;\n}`},
+      {num:2,diff:"easy",problem:"Polymorphism demo: Create a 'Shape' base class with a virtual area() function. Override it in 'Circle' and 'Square'.",example:"Circle(r=5) area = 78.54\nSquare(s=4) area = 16",hint:"virtual float area() in base. Each child overrides with its own formula.",code:`#include <iostream>\nusing namespace std;\n\nclass Shape {\npublic:\n    virtual float area() { return 0; }\n};\n\nclass Circle : public Shape {\n    float r;\npublic:\n    Circle(float r) : r(r) {}\n    float area() override {\n        return 3.14159 * ___ * ___;\n    }\n};\n\nclass Square : public Shape {\n    float s;\npublic:\n    Square(float s) : s(s) {}\n    float area() override {\n        return ___ * ___;\n    }\n};\n\nint main() {\n    Shape* shapes[2];\n    shapes[0] = new Circle(5);\n    shapes[1] = new Square(4);\n\n    for(int i = 0; i < 2; i++)\n        cout << "Area = " << shapes[i]->area() << endl;\n    return 0;\n}`},
+      {num:3,diff:"medium",problem:"Abstract class: Make Shape's area() a PURE VIRTUAL function.\nTry creating a Shape object directly — see the compiler error!",example:"Cannot create Shape object directly.\nBut Circle and Square work fine.",hint:"Pure virtual: virtual float area() = 0;  — Shape becomes abstract, can't be instantiated.",code:`#include <iostream>\nusing namespace std;\n\nclass Shape {\npublic:\n    virtual float area() = ___; // pure virtual\n    virtual string name() = 0;\n};\n\nclass Triangle : public Shape {\n    float base, height;\npublic:\n    Triangle(float b, float h) : base(b), height(h) {}\n    float area() override { return 0.5 * ___ * ___; }\n    string name() override { return "Triangle"; }\n};\n\nint main() {\n    // Shape s;  // ERROR! Cannot instantiate abstract class\n    Triangle t(6, 4);\n    cout << t.name() << " area = " << t.area() << endl;\n    return 0;\n}`},
+      {num:4,diff:"medium",problem:"Create an Animal class with virtual speak(). Dog says 'Woof!', Cat says 'Meow!', Cow says 'Moo!'. Call speak() using base class pointers.",example:"Woof!\nMeow!\nMoo!",hint:"vector<Animal*> animals; — store derived objects in base pointers. Virtual ensures right speak() is called.",code:`#include <iostream>\n#include <vector>\nusing namespace std;\n\nclass Animal {\npublic:\n    virtual void speak() { cout << "..." << endl; }\n};\n\nclass Dog : public Animal {\npublic:\n    void speak() override { cout << "Woof!" << endl; }\n};\n\nclass Cat : public Animal {\npublic:\n    void speak() override { cout << ___; }\n};\n\nclass Cow : public Animal {\npublic:\n    void speak() override { cout << ___; }\n};\n\nint main() {\n    vector<Animal*> farm;\n    farm.push_back(new Dog());\n    farm.push_back(new Cat());\n    farm.push_back(new Cow());\n\n    for(Animal* a : farm) a->___();\n    return 0;\n}`},
+      {num:5,diff:"medium",problem:"Inheritance constructor chaining: Create Person → Student → GradStudent chain. Each adds more fields. Show all fields using one display() call.",example:"GradStudent: Sai Teja, Age 24, GPA 3.8, Research: AI",hint:"Each constructor calls its parent constructor: Student(name, age, gpa) : Person(name, age) {}",code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Person {\npublic:\n    string name; int age;\n    Person(string n, int a) : name(n), age(a) {}\n    virtual void display() {\n        cout << name << ", Age " << age;\n    }\n};\n\nclass Student : public Person {\npublic:\n    float gpa;\n    Student(string n, int a, float g) : ___(n, a), gpa(g) {}\n    void display() override {\n        Person::display();\n        cout << ", GPA " << gpa;\n    }\n};\n\nclass GradStudent : public Student {\npublic:\n    string research;\n    GradStudent(string n, int a, float g, string r)\n        : ___(n, a, g), research(r) {}\n    void display() override {\n        Student::display();\n        cout << ", Research: " << research << endl;\n    }\n};\n\nint main() {\n    GradStudent gs("Sai Teja", 24, 3.8, "AI");\n    gs.display();\n    return 0;\n}`},
+      {num:6,diff:"medium",problem:"Virtual destructor: Show the bug that happens without a virtual destructor, then fix it.",example:"Without virtual ~Base: only Base destructor called\nWith virtual ~Base: both destructors called correctly",hint:"When deleting via base pointer: without virtual destructor, derived destructor is skipped = memory leak!",code:`#include <iostream>\nusing namespace std;\n\nclass Base {\npublic:\n    virtual ~Base() { cout << "Base destructor" << endl; }\n};\n\nclass Derived : public Base {\npublic:\n    ~Derived() { cout << "Derived destructor" << endl; }\n};\n\nint main() {\n    Base* ptr = new ___();\n    delete ptr; // With virtual: calls BOTH destructors\n                // Without virtual ~Base: only Base called!\n    return 0;\n}`},
+      {num:7,diff:"hard",problem:"Shape area calculator using polymorphism: Create 5 shapes, store in a vector, print each shape's name and area, then the total area.",example:"Circle r=3: 28.27\nSquare s=4: 16\nTriangle b=6 h=5: 15\nTotal area = 59.27",hint:"Use vector<Shape*>. Loop calling area() and name() on each. Virtual functions do the work!",code:`#include <iostream>\n#include <vector>\nusing namespace std;\n\nclass Shape {\npublic:\n    virtual float area() = 0;\n    virtual string name() = 0;\n};\n\nclass Circle : public Shape {\n    float r;\npublic:\n    Circle(float r):r(r){}\n    float area() { return 3.14159*r*r; }\n    string name() { return "Circle"; }\n};\n\nclass Rect : public Shape {\n    float w,h;\npublic:\n    Rect(float w,float h):w(w),h(h){}\n    float area() { return w*h; }\n    string name() { return "Rectangle"; }\n};\n\nint main() {\n    vector<Shape*> shapes;\n    shapes.push_back(new Circle(3));\n    shapes.push_back(new Rect(4, 5));\n    shapes.push_back(new Circle(2));\n\n    float total = 0;\n    for(Shape* s : shapes) {\n        cout << s->name() << ": " << s->area() << endl;\n        total += ___->area();\n    }\n    cout << "Total area = " << total << endl;\n    return 0;\n}`},
+      {num:8,diff:"hard",problem:"Mini employee system: Base class Employee (name, salary) with virtual getSalary(). Manager gets 20% bonus, Intern gets base only. Print payroll.",example:"Manager Sai: 60000 (base 50000 + 20%)\nIntern Teja: 15000",hint:"Manager::getSalary() { return salary * 1.2; } Intern just returns base salary.",code:`#include <iostream>\n#include <vector>\n#include <string>\nusing namespace std;\n\nclass Employee {\npublic:\n    string name;\n    float salary;\n    Employee(string n, float s) : name(n), salary(s) {}\n    virtual float getSalary() { return salary; }\n    virtual string role() { return "Employee"; }\n};\n\nclass Manager : public Employee {\npublic:\n    Manager(string n, float s) : Employee(n, s) {}\n    float getSalary() override { return salary * ___; }\n    string role() override { return "Manager"; }\n};\n\nclass Intern : public Employee {\npublic:\n    Intern(string n, float s) : Employee(n, s) {}\n    string role() override { return "Intern"; }\n};\n\nint main() {\n    vector<Employee*> team;\n    team.push_back(new Manager("Sai", 50000));\n    team.push_back(new Intern("Teja", 15000));\n    team.push_back(new Manager("Ravi", 60000));\n\n    float total = 0;\n    for(Employee* e : team) {\n        cout << e->role() << " " << e->name << ": " << e->getSalary() << endl;\n        total += e->getSalary();\n    }\n    cout << "Total payroll: " << total << endl;\n    return 0;\n}`}
     ]
   }
 ];
 
+// ── helpers ──
 let progress = {};
-let currentModal = null;
+let curModal = null;
 
-function loadProgress() {
-  try { const s = localStorage.getItem('neso_cpp_v2'); if(s) progress = JSON.parse(s); } catch(e) {}
-}
-function saveProgress() {
-  try { localStorage.setItem('neso_cpp_v2', JSON.stringify(progress)); } catch(e) {}
-}
-function getLecId(si, li) { return `${si}_${li}`; }
-function countDone() { return Object.values(progress).filter(Boolean).length; }
-function totalLecs() { return data.reduce((a,s)=>a+s.lectures.length,0); }
+function load(){ try{ const d=localStorage.getItem('neso_v3'); if(d) progress=JSON.parse(d); }catch(e){} }
+function save(){ try{ localStorage.setItem('neso_v3',JSON.stringify(progress)); }catch(e){} }
+function lid(si,li){ return si+'_'+li; }
+function totalDone(){ return Object.values(progress).filter(Boolean).length; }
+function totalAll(){ return curriculum.reduce((a,s)=>a+s.lectures.length,0); }
 
-function updateStats() {
-  const done = countDone(), total = totalLecs();
-  document.getElementById('stat-done').textContent = done;
-  document.getElementById('stat-left').textContent = total - done;
-  document.getElementById('stat-pct').textContent = Math.round(done/total*100) + '%';
-  document.getElementById('prog-fill').style.width = (done/total*100) + '%';
-  document.getElementById('prog-text').textContent = `${done} / ${total} lectures`;
+function updateStats(){
+  const done=totalDone(), total=totalAll();
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-left').textContent=total-done;
+  document.getElementById('s-pct').textContent=Math.round(done/total*100)+'%';
+  document.getElementById('prog-fill').style.width=(done/total*100)+'%';
+  document.getElementById('prog-txt').textContent=done+' / '+total+' lectures';
 }
 
-function buildUI() {
-  const cont = document.getElementById('sections-container');
-  let globalIdx = 1;
-  data.forEach((sec, si) => {
-    const div = document.createElement('div');
-    div.className = 'section';
-    div.id = 'sec-' + si;
-
-    const doneSec = sec.lectures.filter((_,li)=>progress[getLecId(si,li)]).length;
-    const allDone = doneSec === sec.lectures.length;
-
-    div.innerHTML = `
-      <div class="sec-header" onclick="toggleSec(${si})">
-        <div class="sec-icon" style="background:${sec.color}22; font-size:15px">${sec.icon}</div>
-        <div class="sec-title">${sec.title}</div>
-        <div class="sec-badge ${allDone?'done':''}" id="secbadge-${si}">${doneSec}/${sec.lectures.length}</div>
-        <div class="sec-chevron" id="secchev-${si}">▼</div>
+function buildUI(){
+  const cont=document.getElementById('cont');
+  let gIdx=1;
+  curriculum.forEach((sec,si)=>{
+    const el=document.createElement('div');
+    el.className='section';
+    el.id='sec'+si;
+    const doneSec=sec.lectures.filter((_,li)=>progress[lid(si,li)]).length;
+    const allDone=doneSec===sec.lectures.length;
+    el.innerHTML=`
+      <div class="sec-hdr" onclick="toggleSec(${si})">
+        <div class="sec-ico" style="background:${sec.color}18">${sec.icon}</div>
+        <div class="sec-ttl">${sec.title}</div>
+        <div class="sec-badge ${allDone?'done':''}" id="badge${si}">${doneSec}/${sec.lectures.length}</div>
+        <div class="chev" id="chev${si}">▼</div>
       </div>
-      <div class="sec-body" id="secbody-${si}">
-        ${sec.lectures.map((lec, li) => {
-          const id = getLecId(si,li);
-          const done = progress[id];
-          return `<div class="lec-row ${done?'completed':''}" id="row-${si}-${li}">
-            <span class="lec-num">${String(globalIdx++).padStart(2,'0')}</span>
+      <div class="sec-body" id="body${si}">
+        ${sec.lectures.map((lec,li)=>{
+          const d=progress[lid(si,li)];
+          return `<div class="lec-row ${d?'done-row':''}" id="row${si}_${li}">
+            <span class="lec-n">${String(gIdx++).padStart(2,'0')}</span>
             <span class="lec-name">${lec}</span>
-            <button class="btn-practice" onclick="openModal(${si},${li})">practice ↗</button>
-            <div class="lec-check ${done?'on':''}" id="chk-${si}-${li}" onclick="toggleLec(${si},${li})" title="Mark done">
-              ${done?'✓':''}
-            </div>
+            <button class="btn-prac" onclick="openModal(${si},${li})">exercises ↗</button>
+            <div class="lec-chk ${d?'on':''}" id="chk${si}_${li}" onclick="toggleLec(${si},${li})">${d?'✓':''}</div>
           </div>`;
         }).join('')}
-      </div>
-    `;
-    cont.appendChild(div);
+      </div>`;
+    cont.appendChild(el);
   });
   updateStats();
 }
 
-function toggleSec(si) {
-  const sec = document.getElementById('sec-'+si);
-  sec.classList.toggle('open');
+function toggleSec(si){
+  const s=document.getElementById('sec'+si);
+  s.classList.toggle('open');
 }
 
-function toggleLec(si, li) {
-  const id = getLecId(si,li);
-  progress[id] = !progress[id];
-  saveProgress();
-  const chk = document.getElementById(`chk-${si}-${li}`);
-  const row = document.getElementById(`row-${si}-${li}`);
-  if(progress[id]) { chk.classList.add('on'); chk.textContent='✓'; row.classList.add('completed'); showToast('Lecture marked done! 🎉'); }
-  else { chk.classList.remove('on'); chk.textContent=''; row.classList.remove('completed'); }
-  const doneSec = data[si].lectures.filter((_,li2)=>progress[getLecId(si,li2)]).length;
-  const allDone = doneSec === data[si].lectures.length;
-  const badge = document.getElementById('secbadge-'+si);
-  badge.textContent = `${doneSec}/${data[si].lectures.length}`;
-  badge.className = 'sec-badge' + (allDone?' done':'');
+function toggleLec(si,li){
+  const id=lid(si,li);
+  progress[id]=!progress[id];
+  save();
+  const chk=document.getElementById('chk'+si+'_'+li);
+  const row=document.getElementById('row'+si+'_'+li);
+  if(progress[id]){chk.classList.add('on');chk.textContent='✓';row.classList.add('done-row');toast('Done! Keep going 🔥');}
+  else{chk.classList.remove('on');chk.textContent='';row.classList.remove('done-row');}
+  const sec=curriculum[si];
+  const doneSec=sec.lectures.filter((_,li2)=>progress[lid(si,li2)]).length;
+  const badge=document.getElementById('badge'+si);
+  badge.textContent=doneSec+'/'+sec.lectures.length;
+  badge.className='sec-badge'+(doneSec===sec.lectures.length?' done':'');
   updateStats();
 }
 
-function openModal(si, li) {
-  currentModal = {si, li};
-  const sec = data[si];
-  const lec = sec.lectures[li];
-  document.getElementById('modal-topic').textContent = sec.title;
-  document.getElementById('modal-title').textContent = lec;
-  const body = document.getElementById('modal-body');
-  body.innerHTML = sec.questions.map((q, i) => `
-    <div class="q-item">
-      <div class="q-num">Exercise ${i+1}</div>
-      <div class="q-text">${q.q}</div>
-      <div class="q-hint">${q.hint}</div>
-    </div>
-  `).join('');
-  document.getElementById('modal').classList.add('show');
-  document.body.style.overflow = 'hidden';
+function diffLabel(d){ return d==='easy'?'diff-easy':d==='hard'?'diff-hard':'diff-med'; }
+
+function openModal(si,li){
+  curModal={si,li};
+  const sec=curriculum[si];
+  document.getElementById('m-topic').textContent=sec.title;
+  document.getElementById('m-title').textContent=sec.lectures[li];
+
+  const body=document.getElementById('m-body');
+  body.innerHTML=sec.exercises.map((ex,i)=>{
+    const encoded=encodeURIComponent(ex.code);
+    const onlineUrl='https://www.onlinegdb.com/online_c++_compiler';
+    return `<div class="q-card">
+      <div class="q-top">
+        <div class="q-meta">
+          <div class="q-num">Exercise ${ex.num}</div>
+          <div class="q-diff ${diffLabel(ex.diff)}">${ex.diff}</div>
+        </div>
+        <div class="q-problem">${ex.problem.replace(/\n/g,'<br>')}</div>
+        <div class="q-example">${ex.example.replace(/\n/g,'<br>')}</div>
+        <button class="q-hint-toggle" onclick="toggleHint(${i})">💡 Show hint</button>
+        <div class="q-hint" id="hint${si}_${li}_${i}">${ex.hint}</div>
+      </div>
+      <div class="q-code-wrap">
+        <div class="q-code-label">starter code — fill in the ___</div>
+        <div class="q-code" id="code${si}_${li}_${i}">${syntaxHL(ex.code)}</div>
+        <div class="q-actions">
+          <a class="btn-run" href="${onlineUrl}" target="_blank" rel="noopener">▶ Run on OnlineGDB</a>
+          <button class="btn-copy" onclick="copyCode(${si},${li},${i})">Copy code</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('overlay').classList.add('show');
+  document.body.style.overflow='hidden';
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('show');
-  document.body.style.overflow = '';
-  currentModal = null;
+function toggleHint(i){
+  const el=document.getElementById('hint'+curModal.si+'_'+curModal.li+'_'+i);
+  el.classList.toggle('show');
+  const btn=el.previousElementSibling;
+  btn.textContent=el.classList.contains('show')?'🙈 Hide hint':'💡 Show hint';
 }
 
-function closeModalOutside(e) {
-  if(e.target === document.getElementById('modal')) closeModal();
+function copyCode(si,li,i){
+  const el=document.getElementById('code'+si+'_'+li+'_'+i);
+  const text=el.textContent;
+  navigator.clipboard.writeText(text).then(()=>toast('Code copied! ✓')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Code copied! ✓');
+  });
 }
 
-function markFromModal() {
-  if(!currentModal) return;
-  const {si, li} = currentModal;
-  if(!progress[getLecId(si,li)]) toggleLec(si, li);
-  closeModal();
+function syntaxHL(code){
+  return code
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(\/\/.*)/g,'<span class="cmt">$1</span>')
+    .replace(/\b(int|float|double|char|bool|void|string|auto|const|return|if|else|for|while|do|class|public|private|protected|new|delete|true|false|this|static|virtual|override|friend|namespace|using|include|endl|cout|cin)\b/g,'<span class="kw">$1</span>')
+    .replace(/"([^"]*)"/g,'<span class="str">"$1"</span>')
+    .replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+  document.body.style.overflow='';
+  curModal=null;
+}
+function closeOuter(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
+function markFromModal(){ if(!curModal) return; if(!progress[lid(curModal.si,curModal.li)]) toggleLec(curModal.si,curModal.li); closeModal(); }
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-loadProgress();
-buildUI();
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+load(); buildUI();
 </script>
 </body>
 </html>
